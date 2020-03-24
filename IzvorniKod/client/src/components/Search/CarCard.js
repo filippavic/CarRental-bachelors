@@ -1,3 +1,5 @@
+//Kartica vozila
+
 import React from 'react'
 
 import { Button } from "reactstrap";
@@ -8,21 +10,21 @@ export default function CarCard(props) {
     return (
         <div className="car-card-cont">
             <div className="car-card-left">
-                <img className="car-img" draggable="false" src={require("../../assets/img/golf.png")}/>
+                <img className="car-img" draggable="false" alt={props.vehicle.nazivmodel} src={props.vehicle.urlslika}/>
             </div>
             <div className="car-card-middle">
                 <div className="car-card-middle-top">
-                    <h2>{props.vehicle.nazProizvodac} {props.vehicle.nazModel}</h2>
+                    <h2>{props.vehicle.nazivproizvodac} {props.vehicle.nazivmodel}</h2>
                 </div>
                 <div className="car-card-middle-bottom">
                     <table>
                         <tbody>
                             <tr>
-                                <td><i className="fas fa-car" id="middle-icon"></i> {props.vehicle.vrstaModel}</td>
-                                <td id="table-text-right"><i className="fas fa-gas-pump" id="middle-icon"></i> {props.vehicle.vrstaMotor}</td>
+                                <td><i className="fas fa-car" id="middle-icon"></i> {props.vehicle.nazivvrstamodel}</td>
+                                <td id="table-text-right"><i className="fas fa-gas-pump" id="middle-icon"></i> {props.vehicle.nazivvrstamotor}</td>
                             </tr>
                             <tr>
-                                <td><i className="fas fa-cog" id="middle-icon"></i> {props.vehicle.vrstaMjenjac}</td>
+                                <td><i className="fas fa-cog" id="middle-icon"></i> {props.vehicle.nazivvrstamjenjac}</td>
                                 <td id="table-text-right"><i className="fas fa-tachometer-alt" id="middle-icon"></i> {props.vehicle.potrosnja} l/100 km</td>
                             </tr>
                         </tbody> 

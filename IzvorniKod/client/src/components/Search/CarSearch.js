@@ -9,17 +9,14 @@ import Select from 'react-select';
 import {
   Button,
   Card,
-  CardHeader,
   CardBody,
   FormGroup,
   Form,
-  Input,
   InputGroupAddon,
   InputGroupText,
   InputGroup,
   Row,
-  Col,
-  UncontrolledAlert
+  Col
 } from "reactstrap";
 
 //lokalizacija datuma
@@ -32,11 +29,11 @@ var valid = function( current ){
     return current.isAfter( yesterday );
 };
 
-const options = [
-    { value: 'ZagrebZL', label: 'Zagreb - zračna luka' },
-    { value: 'Rijeka', label: 'Rijeka' },
-    { value: 'Split', label: 'Split' }
-]
+//zaokruzi vrijeme na cetvrtinu
+var coeff = 1000 * 60 * 15;
+var date = new Date();
+var rounded = new Date(Math.round(date.getTime() / coeff) * coeff);
+
 
 //stil selection drop-down menija
 const reactSelectStyles = {
@@ -65,28 +62,38 @@ const reactSelectStyles = {
 
 class CarSearch extends React.Component {
 
-    state = {
-        startDate: null,
-        endDate: null,
-        selectedPickup: null,
-        selectedDropoff: null,
-        razlika: null
-    };
+    constructor(props){
+        super(props);
+        this.state = {
+            startDate: null,
+            endDate: null,
+            selectedPickup: null,
+            selectedDropoff: null,
+            razlika: null,
+        };
+        this.options = [];
+    }
 
+    //ucitavanje popisa lokacija
+    componentDidMount(){
+        fetch(`/api/start_page/locations`)
+        .then(res => res.json())
+        .then(data => {
+            this.setState({ options: data });
+        });
+    }
+
+    //funkcije za odabir lokacija
     handlePickupSelect = selectedPickup => {
-        this.setState(
-          { selectedPickup },
-          () => console.log(`Selected pickup:`, this.state.selectedPickup)
-        );
+        this.setState({ selectedPickup });
     };
 
     handleDropoffSelect = selectedDropoff => {
         this.setState(
-          { selectedDropoff },
-          () => console.log(`Selected dropoff:`, this.state.selectedDropoff)
-        );
+          { selectedDropoff });
     };
 
+    //slanje odabranih opcija parent komponenti
     handleSubmit = (e) => {
         e.preventDefault();
         if (this.state.startDate && this.state.endDate){
@@ -114,11 +121,13 @@ class CarSearch extends React.Component {
                                 </InputGroupText>
                                 </InputGroupAddon>
                                 <ReactDatetime
+                                autoComplete='off'
                                 inputProps={{
                                     placeholder: "Vrijeme preuzimanja"
                                 }}
                                 isValidDate={ valid }
                                 timeFormat={true}
+                                defaultValue={rounded}
                                 timeConstraints={{hours: { min: 8, max: 18, step: 1 }, minutes: {step: 15}}}
                                 renderDay={(props, currentDate, selectedDate) => {
                                     {/* Sljedeci kod je bitan za oznacavanje odabranih datuma */}
@@ -166,6 +175,7 @@ class CarSearch extends React.Component {
                                 </InputGroupText>
                                 </InputGroupAddon>
                                 <ReactDatetime
+                                autoComplete='off'
                                 inputProps={{
                                     placeholder: "Vrijeme vraćanja"
                                 }}
@@ -217,7 +227,7 @@ class CarSearch extends React.Component {
                             <Select
                                 styles={reactSelectStyles}
                                 placeholder="Poslovnica preuzimanja"
-                                options={options}
+                                options={this.state.options}
                                 value={this.state.selectedPickup}
                                 onChange={this.handlePickupSelect}
                             />
@@ -226,7 +236,7 @@ class CarSearch extends React.Component {
                             <Select
                                 styles={reactSelectStyles}
                                 placeholder="Poslovnica vraćanja"
-                                options={options}
+                                options={this.state.options}
                                 value={this.state.selectedDropoff}
                                 onChange={this.handleDropoffSelect}
                             />

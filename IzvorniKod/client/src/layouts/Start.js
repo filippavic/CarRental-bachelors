@@ -1,12 +1,11 @@
 //Pocetni zaslon aplikacije
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { Route, Switch, Redirect } from "react-router-dom";
 
 import { Container, Row, Col, Alert, Button } from "reactstrap";
 import axios from 'axios';
-import { usePromiseTracker } from "react-promise-tracker";
-import { trackPromise } from 'react-promise-tracker';
+import Lottie from 'react-lottie';
 
 import AuthNavbar from "../components/Navbars/AuthNavbar.js";
 import AuthFooter from "../components/Footers/AuthFooter.js";
@@ -14,70 +13,44 @@ import CarSearch from "../components/Search/CarSearch.js";
 import CarCard from "../components/Search/CarCard.js";
 
 import "./Start.css";
+import * as animationData from '../assets/loading.json';
 
-const vehicleArray = 
-[
-    {
-        "nazProizvodac": "Volkswagen",
-        "nazModel": "Golf 8",
-        "vrstaModel": "hatchback",
-        "vrstaMotor": "dizel",
-        "vrstaMjenjac": "ručni",
-        "potrosnja": "5.2",
-        "cijenaPoDanu": "150",
-        "iznos": "300" 
-    },
-    {
-        "nazProizvodac": "Mercedes-Benz",
-        "nazModel": "C klasa",
-        "vrstaModel": "limuzina",
-        "vrstaMotor": "benzin",
-        "vrstaMjenjac": "automatski",
-        "potrosnja": "6.3",
-        "cijenaPoDanu": "250",
-        "iznos": "600"  
-    },
-    {
-        "nazProizvodac": "Rimac Automobili",
-        "nazModel": "C_TWO",
-        "vrstaModel": "sportski",
-        "vrstaMotor": "električni",
-        "vrstaMjenjac": "automatski",
-        "potrosnja": "0",
-        "cijenaPoDanu": "400",
-        "iznos": "950"
-    }
-]
-  
+//za scroll na popis vozila
+const scrollToRef = (ref) => window.scrollTo(0, ref.current.offsetTop);
 
 export default function Start() {
-    const [vehicleData, setVehicleData] = useState(vehicleArray);
-    const [query, setQuery] = useState('redux');
+    const [vehicleData, setVehicleData] = useState({
+      vehicles: [],
+      isFetching: false
+    });
     const [search, setSearch] = useState('redux');
     const [didMount, setDidMount] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
     const [razlika, setRazlika] = useState();
     const [alert, setAlert] = useState(false);
     const [isSortedAscending, setIsSortedAscending] = useState(true);
+    const [options, setOptions] = useState({
+      sifLokPrikupljanja: null,
+      sifLokVracanja: null
+    })
 
     const [isReady, setIsReady] = useState(false);
 
-    const LoadingIndicator = props => {
-        const { promiseInProgress } = usePromiseTracker();
-        return (
-            promiseInProgress && <h1>Hey some async call in progress ! </h1>
-        );  
-    }
+    //opcije za Lottie animaciju
+    const defaultOptions = {
+      loop: true,
+      autoplay: true, 
+      animationData: animationData.default,
+      rendererSettings: {
+        preserveAspectRatio: 'xMidYMid slice'
+      }
+    };
+
+    const vehicleRef = useRef(null)
 
     useEffect(() => {
         //postavi pozadinu kad se stranica ucita
         document.body.classList.add("bg-default");
         setDidMount(true);
-
-        fetch(`/api/start_page/2`)
-      .then(res => console.log(res.json()));
-      
-      
         return () => {
             //ukloni pozadinu prilikom izlaska
             document.body.classList.remove("bg-default");
@@ -86,20 +59,23 @@ export default function Start() {
 
     //Search gumb iz CarSearch triggera pretragu, alert ako nije sve ispunjeno
     const handleClick = (values) => {
-        setSearch(values);
         if(!values.startDate || !values.endDate || !values.selectedPickup || !values.selectedDropoff){
             setAlert(true);
         }
         else{
+            //spremaju se odabrane opcije, pokrece se pretraga, omogucuje se menu
+            setOptions({sifLokPrikupljanja: values.selectedPickup.value});
+            setSearch(true);
             setAlert(false);
-            setRazlika(values.razlika)
+            setRazlika(values.razlika);
+            setIsReady(true);
         }
-        setIsReady(true);
     }
 
     //zatvori alert
     const onDismiss = () => setAlert(false);
 
+    //funkcija sortiranje
     const toggleSort = () => {
         if (isSortedAscending){
             setVehicleData(vehicleData.sort((a, b) => (b.iznos - a.iznos)));
@@ -110,24 +86,23 @@ export default function Start() {
             setIsSortedAscending(true);
         }
     }
-
-    
-
+  
     //pretraga
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         try {
-    //           setVehicleData({vehicles: vehicleData.vehicles, isFetching: true});
-    //           const response = await axios.get('./vehicles.json');
-    //           setVehicleData({vehicles: response.data, isFetching: false});
-    //       } catch (e) {
-    //           console.log(e);
-    //           setVehicleData({vehicles: vehicleData.vehicles, isFetching: false});
-    //       }
-    //       };
-    //     if (didMount) fetchData();
-    //     console.log(vehicleData);
-    // }, [search]);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+              setVehicleData({vehicles: vehicleData.vehicles, isFetching: true});
+              const response = await axios.get(`/api/start_page/vehicles/${options.sifLokPrikupljanja}`);
+              setVehicleData({vehicles: response.data, isFetching: false});
+              setIsReady(true);
+              scrollToRef(vehicleRef);
+          } catch (e) {
+              console.log(e);
+              setVehicleData({vehicles: vehicleData.vehicles, isFetching: false});
+          }
+          };
+        if (didMount) fetchData();
+    }, [search]);
 
 
     return (
@@ -181,21 +156,31 @@ export default function Start() {
                 <CarSearch handleClick={(values) => handleClick(values)}/>
             </Row>
           </Container>
-          <LoadingIndicator/>
-          <div className="vehicle-list">
+
+          {/* Popis vozila */}
+          <div ref={vehicleRef} className="vehicle-list">
+            {/* Animacija prilikom ucitavanja */}
+            {vehicleData.isFetching &&
+              <div className="loading-animation">
+                <Lottie options={defaultOptions}
+                height={100}/>
+              </div>  
+            }
+            {isReady && !vehicleData.isFetching &&
               <div className="vehicle-list-menu">
-                  <div className="vehicle-list-menu-left">
-                    <h3>U ponudi imamo {vehicleArray.length} {vehicleArray===1 ? "vozilo" : "vozila"}:</h3>
-                  </div>
-                  <div className="vehicle-list-menu-right"> 
-                    <Button id="sort-button" color="primary" outline size="sm" type="button" onClick={() => toggleSort()}>
-                        Sortiraj {isSortedAscending ? "silazno" : "uzlazno"}
-                    </Button>
-                  </div>
+                <div className="vehicle-list-menu-left">
+                  <h3>U ponudi imamo {vehicleData.vehicles.length} {vehicleData.vehicles.length===1 ? "vozilo" : "vozila"}:</h3>
+                </div>
+                <div className="vehicle-list-menu-right"> 
+                  <Button id="sort-button" color="primary" outline size="sm" type="button" onClick={() => toggleSort()}>
+                      Sortiraj {isSortedAscending ? "silazno" : "uzlazno"}
+                  </Button>
+                </div>
               </div>
-              {vehicleData.map (vehicle => (
-                  <CarCard vehicle={vehicle} razlika={razlika}/>
-              ))}
+            }            
+            {vehicleData.vehicles.map (vehicle => (
+              <CarCard key={vehicle.sifvozilo} vehicle={vehicle} razlika={razlika}/>
+            ))}
           </div>
         </div>
         <AuthFooter />
