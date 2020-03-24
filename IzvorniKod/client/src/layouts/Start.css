@@ -1,0 +1,17 @@
+.vehicle-list-menu{
+    width: 75%;
+    margin: auto;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.vehicle-list-menu h3{
+    color: #f7fafc;
+}
+
+#sort-button{
+    border: none;
+    color: #f7fafc;
+}
