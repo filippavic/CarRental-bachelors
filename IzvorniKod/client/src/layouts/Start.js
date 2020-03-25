@@ -18,19 +18,22 @@ import * as animationData from '../assets/loading.json';
 //za scroll na popis vozila
 const scrollToRef = (ref) => window.scrollTo(0, ref.current.offsetTop);
 
+var moment = require('moment');
+
 export default function Start() {
     const [vehicleData, setVehicleData] = useState({
       vehicles: [],
       isFetching: false
     });
-    const [search, setSearch] = useState('redux');
     const [didMount, setDidMount] = useState(false);
     const [razlika, setRazlika] = useState();
     const [alert, setAlert] = useState(false);
     const [isSortedAscending, setIsSortedAscending] = useState(true);
     const [options, setOptions] = useState({
       sifLokPrikupljanja: null,
-      sifLokVracanja: null
+      sifLokVracanja: null,
+      datumVrijemeOd: null,
+      datumVrijemeDo: null
     })
 
     const [isReady, setIsReady] = useState(false);
@@ -64,8 +67,12 @@ export default function Start() {
         }
         else{
             //spremaju se odabrane opcije, pokrece se pretraga, omogucuje se menu
-            setOptions({sifLokPrikupljanja: values.selectedPickup.value});
-            setSearch(true);
+            console.log(values);
+            setOptions({sifLokPrikupljanja: values.selectedPickup.value,
+                        sifLokVracanja: values.selectedDropoff.value,
+                        datumVrijemeOd: moment(values.startDate).format("YYYY-MM-DD HH:mm:ss"),
+                        datumVrijemeDo: moment(values.endDate).format("YYYY-MM-DD HH:mm:ss")
+            });
             setAlert(false);
             setRazlika(values.razlika);
             setIsReady(true);
@@ -92,7 +99,7 @@ export default function Start() {
         const fetchData = async () => {
             try {
               setVehicleData({vehicles: vehicleData.vehicles, isFetching: true});
-              const response = await axios.get(`/api/start_page/vehicles/${options.sifLokPrikupljanja}`);
+              const response = await axios.get(`/api/start_page/vehicles/${options.datumVrijemeOd}/${options.datumVrijemeDo}/${options.sifLokPrikupljanja}`);
               setVehicleData({vehicles: response.data, isFetching: false});
               setIsReady(true);
               scrollToRef(vehicleRef);
@@ -102,7 +109,7 @@ export default function Start() {
           }
           };
         if (didMount) fetchData();
-    }, [search]);
+    }, [options]);
 
 
     return (

@@ -3,11 +3,11 @@ var router = express.Router();
 const db = require("../../database/database.js");
 
 //popis dostupnih vozila
-router.get("/vehicles/:siflok", async function(req, res, next) {
+router.get("/vehicles/:datumOd/:datumDo/:siflok", async function(req, res, next) {
     res.setHeader("content-type", "application/json");
     res.setHeader("accept", "application/json");
-    db.any('SELECT vozilo.sifvozilo, nazivproizvodac, nazivmodel, nazivvrstamodel, nazivvrstamotor, nazivvrstamjenjac, potrosnja, urlslika FROM vozilo NATURAL JOIN model NATURAL JOIN proizvodac NATURAL JOIN vrsta_model NATURAL JOIN vrsta_mjenjac NATURAL JOIN vrsta_motor NATURAL JOIN lokacija_vozilo WHERE sifstatus = 2 AND siflokacija = $1',
-    [req.params.siflok]).then(data => {
+    db.any('SELECT vozilo.sifvozilo, registratskaoznaka, nazivproizvodac, nazivmodel, nazivvrstamodel, nazivvrstamotor, nazivvrstamjenjac, potrosnja, urlslika FROM najam RIGHT JOIN vozilo ON vozilo.sifvozilo = najam.sifvozilo JOIN lokacija_vozilo ON vozilo.sifvozilo = lokacija_vozilo.sifvozilo NATURAL JOIN model NATURAL JOIN proizvodac NATURAL JOIN vrsta_model NATURAL JOIN vrsta_mjenjac NATURAL JOIN vrsta_motor WHERE vozilo.sifvozilo NOT IN (SELECT sifvozilo FROM najam WHERE planiranidatumvrijemeod < $1 AND planiranidatumvrijemedo > $1) AND vozilo.sifvozilo NOT IN (SELECT sifvozilo FROM najam WHERE planiranidatumvrijemeod > $1 AND planiranidatumvrijemedo < $2) AND vozilo.sifvozilo NOT IN (SELECT sifvozilo FROM najam WHERE planiranidatumvrijemeod < $2 AND planiranidatumvrijemedo > $2) AND (CASE WHEN vozilo.sifvozilo IN (SELECT DISTINCT najam.sifvozilo FROM najam) THEN siflokvracanja = $3 ELSE lokacija_vozilo.siflokacija = $3 AND sifstatus = 2 END)',
+    [req.params.datumOd, req.params.datumDo, req.params.siflok]).then(data => {
         res.send(data);
     })
     .catch(error => {

@@ -89,8 +89,7 @@ class CarSearch extends React.Component {
     };
 
     handleDropoffSelect = selectedDropoff => {
-        this.setState(
-          { selectedDropoff });
+        this.setState({ selectedDropoff });
     };
 
     //slanje odabranih opcija parent komponenti
