@@ -1,6 +1,6 @@
-/build
+/client
 /node_modules
 client/node_modules/
 node_modules/
 package-lock.json
-/build
+client/
