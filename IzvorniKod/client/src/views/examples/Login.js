@@ -39,54 +39,19 @@ class Login extends React.Component {
       <>
         <Col lg="5" md="7">
           <Card className="bg-secondary shadow border-0">
-            <CardHeader className="bg-transparent pb-5">
-              <div className="text-muted text-center mt-2 mb-3">
-                <small>Sign in with</small>
-              </div>
-              <div className="btn-wrapper text-center">
-                <Button
-                  className="btn-neutral btn-icon"
-                  color="default"
-                  href="#pablo"
-                  onClick={e => e.preventDefault()}
-                >
-                  <span className="btn-inner--icon">
-                    <img
-                      alt="..."
-                      src={require("../../assets/img/icons/common/github.svg")}
-                    />
-                  </span>
-                  <span className="btn-inner--text">Github</span>
-                </Button>
-                <Button
-                  className="btn-neutral btn-icon"
-                  color="default"
-                  href="#pablo"
-                  onClick={e => e.preventDefault()}
-                >
-                  <span className="btn-inner--icon">
-                    <img
-                      alt="..."
-                      src={require("../../assets/img/icons/common/google.svg")}
-                    />
-                  </span>
-                  <span className="btn-inner--text">Google</span>
-                </Button>
-              </div>
-            </CardHeader>
             <CardBody className="px-lg-5 py-lg-5">
               <div className="text-center text-muted mb-4">
-                <small>Or sign in with credentials</small>
+                <small>Prijavite se u postojeći račun</small>
               </div>
               <Form role="form">
                 <FormGroup className="mb-3">
                   <InputGroup className="input-group-alternative">
                     <InputGroupAddon addonType="prepend">
                       <InputGroupText>
-                        <i className="ni ni-email-83" />
+                        <i className="ni ni-badge" />
                       </InputGroupText>
                     </InputGroupAddon>
-                    <Input placeholder="Email" type="email" autoComplete="new-email"/>
+                    <Input placeholder="Korisničko ime" type="text" autoComplete="username"/>
                   </InputGroup>
                 </FormGroup>
                 <FormGroup>
@@ -96,10 +61,10 @@ class Login extends React.Component {
                         <i className="ni ni-lock-circle-open" />
                       </InputGroupText>
                     </InputGroupAddon>
-                    <Input placeholder="Password" type="password" autoComplete="new-password"/>
+                    <Input placeholder="Lozinka" type="password" autoComplete="current-password"/>
                   </InputGroup>
                 </FormGroup>
-                <div className="custom-control custom-control-alternative custom-checkbox">
+                {/* <div className="custom-control custom-control-alternative custom-checkbox">
                   <input
                     className="custom-control-input"
                     id=" customCheckLogin"
@@ -111,17 +76,17 @@ class Login extends React.Component {
                   >
                     <span className="text-muted">Remember me</span>
                   </label>
-                </div>
+                </div> */}
                 <div className="text-center">
                   <Button className="my-4" color="primary" type="button">
-                    Sign in
+                    Prijavi se
                   </Button>
                 </div>
               </Form>
             </CardBody>
           </Card>
           <Row className="mt-3">
-            <Col xs="6">
+            {/* <Col xs="6">
               <a
                 className="text-light"
                 href="#pablo"
@@ -129,14 +94,14 @@ class Login extends React.Component {
               >
                 <small>Forgot password?</small>
               </a>
-            </Col>
-            <Col className="text-right" xs="6">
+            </Col> */}
+            <Col xs="6">
               <a
                 className="text-light"
-                href="#pablo"
-                onClick={e => e.preventDefault()}
+                href="/auth/register"
+                //onClick={e => e.preventDefault()}
               >
-                <small>Create new account</small>
+                <small>Stvorite novi račun</small>
               </a>
             </Col>
           </Row>

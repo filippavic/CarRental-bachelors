@@ -16,7 +16,7 @@
 
 */
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 // reactstrap components
 import {
   UncontrolledCollapse,
@@ -40,7 +40,7 @@ class AdminNavbar extends React.Component {
         >
           <Container className="px-4">
             <NavbarBrand to="/" tag={Link}>
-              {/* <h2>RENTAL</h2> */}
+              <h2 style={{color: "white", textTransform:"none"}}>Rent-a-car</h2>
               {/* <img alt="..." src={require("../../assets/img/brand/argon-react-white.png")} /> */}
             </NavbarBrand>
             <button className="navbar-toggler" id="navbar-collapse-main">
@@ -51,7 +51,7 @@ class AdminNavbar extends React.Component {
                 <Row>
                   <Col className="collapse-brand" xs="6">
                     <Link to="/">
-                      <h2>RENTAL</h2>
+                      <h2 >Rent-a-car</h2>
                       {/* <img
                         alt="..."
                         src={require("../../assets/img/brand/argon-react.png")}

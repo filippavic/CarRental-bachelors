@@ -17,6 +17,8 @@
 */
 import React from "react";
 
+import ReactDatetime from "react-datetime";
+
 // reactstrap components
 import {
   Button,
@@ -33,60 +35,62 @@ import {
   Col
 } from "reactstrap";
 
+//lokalizacija datuma
+var moment = require('moment');
+require('moment/locale/hr');
+
+//onemoguci datume
+var eighteen = ReactDatetime.moment().subtract( 18, 'year' );
+var valid = function( current ){
+    return current.isBefore(eighteen);
+};
+
 class Register extends React.Component {
   render() {
     return (
       <>
         <Col lg="6" md="8">
           <Card className="bg-secondary shadow border-0">
-            <CardHeader className="bg-transparent pb-5">
-              <div className="text-muted text-center mt-2 mb-4">
-                <small>Sign up with</small>
-              </div>
-              <div className="text-center">
-                <Button
-                  className="btn-neutral btn-icon mr-4"
-                  color="default"
-                  href="#pablo"
-                  onClick={e => e.preventDefault()}
-                >
-                  <span className="btn-inner--icon">
-                    <img
-                      alt="..."
-                      src={require("../../assets/img/icons/common/github.svg")}
-                    />
-                  </span>
-                  <span className="btn-inner--text">Github</span>
-                </Button>
-                <Button
-                  className="btn-neutral btn-icon"
-                  color="default"
-                  href="#pablo"
-                  onClick={e => e.preventDefault()}
-                >
-                  <span className="btn-inner--icon">
-                    <img
-                      alt="..."
-                      src={require("../../assets/img/icons/common/google.svg")}
-                    />
-                  </span>
-                  <span className="btn-inner--text">Google</span>
-                </Button>
-              </div>
-            </CardHeader>
             <CardBody className="px-lg-5 py-lg-5">
               <div className="text-center text-muted mb-4">
-                <small>Or sign up with credentials</small>
+                <small>Registrirajte se</small>
               </div>
               <Form role="form">
                 <FormGroup>
                   <InputGroup className="input-group-alternative mb-3">
                     <InputGroupAddon addonType="prepend">
                       <InputGroupText>
-                        <i className="ni ni-hat-3" />
+                        <i className="ni ni-single-02" />
                       </InputGroupText>
                     </InputGroupAddon>
-                    <Input placeholder="Name" type="text" />
+                    <Input placeholder="Ime" type="text" />
+                  </InputGroup>
+                </FormGroup>
+                <FormGroup>
+                  <InputGroup className="input-group-alternative mb-3">
+                    <InputGroupAddon addonType="prepend">
+                      <InputGroupText>
+                        <i className="ni ni-single-02" />
+                      </InputGroupText>
+                    </InputGroupAddon>
+                    <Input placeholder="Prezime" type="text" />
+                  </InputGroup>
+                </FormGroup>
+                <FormGroup>
+                  <InputGroup className="input-group-alternative">
+                    <InputGroupAddon addonType="prepend">
+                      <InputGroupText>
+                        <i className="ni ni-calendar-grid-58" />
+                      </InputGroupText>
+                    </InputGroupAddon>
+                    <ReactDatetime
+                      autoComplete='off'
+                      inputProps={{placeholder: "Datum rođenja"}}
+                      isValidDate={valid}
+                      //defaultValue={eighteen}
+                      timeFormat={false}
+                      //onChange={e => this.setState({ startDate: e })}
+                    />
                   </InputGroup>
                 </FormGroup>
                 <FormGroup>
@@ -100,22 +104,32 @@ class Register extends React.Component {
                   </InputGroup>
                 </FormGroup>
                 <FormGroup>
+                  <InputGroup className="input-group-alternative mb-3">
+                    <InputGroupAddon addonType="prepend">
+                      <InputGroupText>
+                        <i className="ni ni-badge" />
+                      </InputGroupText>
+                    </InputGroupAddon>
+                    <Input placeholder="Korisničko ime" type="text" autoComplete="off"/>
+                  </InputGroup>
+                </FormGroup>
+                <FormGroup>
                   <InputGroup className="input-group-alternative">
                     <InputGroupAddon addonType="prepend">
                       <InputGroupText>
                         <i className="ni ni-lock-circle-open" />
                       </InputGroupText>
                     </InputGroupAddon>
-                    <Input placeholder="Password" type="password" autoComplete="new-password"/>
+                    <Input placeholder="Lozinka" type="password" autoComplete="new-password"/>
                   </InputGroup>
                 </FormGroup>
-                <div className="text-muted font-italic">
+                {/* <div className="text-muted font-italic">
                   <small>
                     password strength:{" "}
                     <span className="text-success font-weight-700">strong</span>
                   </small>
-                </div>
-                <Row className="my-4">
+                </div> */}
+                {/* <Row className="my-4">
                   <Col xs="12">
                     <div className="custom-control custom-control-alternative custom-checkbox">
                       <input
@@ -136,10 +150,10 @@ class Register extends React.Component {
                       </label>
                     </div>
                   </Col>
-                </Row>
+                </Row> */}
                 <div className="text-center">
                   <Button className="mt-4" color="primary" type="button">
-                    Create account
+                    Stvorite račun
                   </Button>
                 </div>
               </Form>

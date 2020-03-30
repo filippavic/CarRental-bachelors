@@ -58,10 +58,10 @@ class Auth extends React.Component {
               <div className="header-body text-center mb-7">
                 <Row className="justify-content-center">
                   <Col lg="5" md="6">
-                    <h1 className="text-white">Welcome!</h1>
+                    <h1 className="text-white">Dobrodošli!</h1>
                     <p className="text-lead text-light">
-                      Use these awesome forms to login or create new account in
-                      your project for free.
+                      Kako biste mogli napraviti rezervaciju, potrebno je prijaviti se
+                      ili napraviti račun ako ga nemate.
                     </p>
                   </Col>
                 </Row>

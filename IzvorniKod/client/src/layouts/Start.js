@@ -12,8 +12,11 @@ import AuthFooter from "../components/Footers/AuthFooter.js";
 import CarSearch from "../components/Search/CarSearch.js";
 import CarCard from "../components/Search/CarCard.js";
 
+import { loadUser } from '../actions/authActions';
+
 import "./Start.css";
 import * as animationData from '../assets/loading.json';
+import store from '../store.js';
 
 //za scroll na popis vozila
 const scrollToRef = (ref) => window.scrollTo(0, ref.current.offsetTop);
@@ -51,6 +54,8 @@ export default function Start() {
     const vehicleRef = useRef(null)
 
     useEffect(() => {
+        store.dispatch(loadUser());
+
         //postavi pozadinu kad se stranica ucita
         document.body.classList.add("bg-default");
         setDidMount(true);
