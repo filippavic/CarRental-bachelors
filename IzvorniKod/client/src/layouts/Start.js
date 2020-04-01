@@ -71,7 +71,6 @@ export default function Start() {
         }
         else{
             //spremaju se odabrane opcije, pokrece se pretraga, omogucuje se menu
-            console.log(values);
             setOptions({sifLokPrikupljanja: values.selectedPickup.value,
                         sifLokVracanja: values.selectedDropoff.value,
                         datumVrijemeOd: moment(values.startDate).format("YYYY-MM-DD HH:mm:ss"),

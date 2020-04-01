@@ -1,0 +1,23 @@
+.bg-gradient-info {
+    background: linear-gradient(87deg, #C04848 0, #480048 100%) !important; }
+
+.btn-primary{
+    background-color: #C04848;
+    border-color: #C04848;
+}
+
+.btn-primary:hover{
+    background-color: #C04848;
+    border-color: #C04848;
+}
+
+.btn-primary.disabled, .btn-primary:disabled {
+    color: #fff;
+    background-color: #C04848;
+    border-color: #C04848; }
+
+.btn-primary:not(:disabled):not(.disabled):active, .btn-primary:not(:disabled):not(.disabled).active,
+.show > .btn-primary.dropdown-toggle {
+    color: #fff;
+    background-color: rgb(150, 55, 55);
+    border-color: rgb(150, 55, 55); }
