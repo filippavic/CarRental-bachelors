@@ -78,6 +78,14 @@ export const login = ({ korisnickoIme, lozinka }) => dispatch => {
 }
 
 
+//odjava korisnika
+export const logout = () => {
+    return {
+        type: LOGOUT_SUCCESS
+    };
+}
+
+//token
 export const tokenConfig = getState => {
     //dohvati token iz  localstorage
     const token = getState().auth.token;

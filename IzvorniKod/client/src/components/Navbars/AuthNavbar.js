@@ -16,9 +16,10 @@
 
 */
 import React from "react";
-import { Link, withRouter } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { logout } from '../../actions/authActions';
 
 // reactstrap components
 import {
@@ -36,7 +37,8 @@ import {
 class AdminNavbar extends React.Component {
 
   static propTypes = {
-    auth: PropTypes.object.isRequired
+    auth: PropTypes.object.isRequired,
+    logout: PropTypes.func.isRequired
   }
 
   render() {
@@ -114,7 +116,16 @@ class AdminNavbar extends React.Component {
                     </NavLink>
                   </NavItem>
                 ) : null
-                }                                
+                }
+                {isAuthenticated ? (
+                  <NavItem>
+                    <NavLink className="nav-link-icon" onClick={this.props.logout} href="#">
+                      <i className="ni ni-key-25" />
+                      <span className="nav-link-inner--text">Odjava</span>
+                    </NavLink>
+                  </NavItem>
+                ) : null
+                }                              
               </Nav>
             </UncontrolledCollapse>
           </Container>
@@ -128,4 +139,4 @@ const mapStateToProps = state => ({
   auth: state.auth
 });
 
-export default connect(mapStateToProps, null)(AdminNavbar);
+export default connect(mapStateToProps, { logout })(AdminNavbar);

@@ -1,7 +1,6 @@
 //Pocetni zaslon aplikacije
 
 import React, { useEffect, useState, useRef } from 'react'
-import { Route, Switch, Redirect } from "react-router-dom";
 
 import { Container, Row, Col, Alert, Button } from "reactstrap";
 import axios from 'axios';

@@ -7,7 +7,8 @@ function auth(req, res, next) {
     const token = req.header('x-auth-token');
 
     //provjeri postoji li token
-    if(!token) return res.status(401).json({ msg: 'Neuspjela autorizacija'});
+    //if(!token) return res.status(401).json({ msg: 'Neuspjela autorizacija'});
+    if(!token) return;
 
     try{
         //verifikacija tokena
