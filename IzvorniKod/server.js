@@ -9,10 +9,14 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/api/start_page", require("./routes/api/start_page"));
 app.use("/api/users", require("./routes/api/users"));
 
-app.use(express.static(path.join(__dirname, "build")));
-app.get("*", (req, res) =>
-	res.sendFile(path.resolve(__dirname, "build", "index.html"))
-);
+// app.use(express.static(path.join(__dirname, "build")));
+// app.get("*", (req, res) =>
+// 	res.sendFile(path.resolve(__dirname, "build", "index.html"))
+// );
+
+const buildPath = path.join(__dirname, "build");
+app.use(express.static(buildPath));
+app.get("/", (req, res) => res.sendFile(path.join(buildPath, "index.html")));
 
 const PORT = process.env.PORT || 5000;
 

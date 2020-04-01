@@ -101,11 +101,11 @@ router.post("/login", async function(req, res, next) {
         })
 
     }).catch(error => {
-        // console.log(error);
         return res.status(400).json({msg: "Korisnik ne postoji"});
     });
 });
 
+//dohvacanje korisnika
 router.get('/user', auth, (req, res) => {
     db.one('SELECT ime, prezime, datumrod, korisnickoime, mail, sifvrstakorisnik FROM korisnik WHERE korisnickoime=$1',
     [req.user.korisnickoIme]).then(data => {

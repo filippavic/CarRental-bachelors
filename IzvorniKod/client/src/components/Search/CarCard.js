@@ -1,12 +1,15 @@
 //Kartica vozila
 
 import React from 'react'
+import { useSelector } from 'react-redux';
 
 import { Button } from "reactstrap";
 
 import './CarCard.css';
 
 export default function CarCard(props) {
+    const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
+
     return (
         <div className="car-card-cont">
             <div className="car-card-left">
@@ -43,9 +46,16 @@ export default function CarCard(props) {
                     </div>
                 </div>
                 <div className="car-card-right-button">
-                    <Button color="primary" type="button">
-                        Rezerviraj
-                    </Button>
+                    {isAuthenticated ? (
+                        <Button color="primary" type="button">
+                            Rezerviraj
+                        </Button>
+                    ) : (
+                        <Button color="primary" disabled type="button">
+                            Prijavite se za rezervaciju
+                        </Button>
+                    )}
+                    
                 </div>
                 
             </div>

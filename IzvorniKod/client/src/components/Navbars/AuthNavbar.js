@@ -17,6 +17,9 @@
 */
 import React from "react";
 import { Link, withRouter } from "react-router-dom";
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+
 // reactstrap components
 import {
   UncontrolledCollapse,
@@ -31,7 +34,14 @@ import {
 } from "reactstrap";
 
 class AdminNavbar extends React.Component {
+
+  static propTypes = {
+    auth: PropTypes.object.isRequired
+  }
+
   render() {
+    const { isAuthenticated } = this.props.auth;
+
     return (
       <>
         <Navbar
@@ -70,32 +80,41 @@ class AdminNavbar extends React.Component {
                 </Row>
               </div>
               <Nav className="ml-auto" navbar>
-                <NavItem>
-                  <NavLink
-                    className="nav-link-icon"
-                    to="/auth/register"
-                    tag={Link}
-                  >
-                    <i className="ni ni-circle-08" />
-                    <span className="nav-link-inner--text">Registracija</span>
-                  </NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink
-                    className="nav-link-icon"
-                    to="/auth/login"
-                    tag={Link}
-                  >
-                    <i className="ni ni-key-25" />
-                    <span className="nav-link-inner--text">Prijava</span>
-                  </NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink className="nav-link-icon" to="/" tag={Link}>
-                    <i className="ni ni-app" />
-                    <span className="nav-link-inner--text">Upravljačka ploča</span>
-                  </NavLink>
-                </NavItem>
+                {isAuthenticated ? null : (
+                  <NavItem>
+                    <NavLink
+                      className="nav-link-icon"
+                      to="/auth/register"
+                      tag={Link}
+                    >
+                      <i className="ni ni-circle-08" />
+                      <span className="nav-link-inner--text">Registracija</span>
+                    </NavLink>
+                  </NavItem>
+                )
+                }
+                {isAuthenticated ? null : (
+                  <NavItem>
+                    <NavLink
+                      className="nav-link-icon"
+                      to="/auth/login"
+                      tag={Link}
+                    >
+                      <i className="ni ni-key-25" />
+                      <span className="nav-link-inner--text">Prijava</span>
+                    </NavLink>
+                  </NavItem>
+                )
+                }
+                {isAuthenticated ? (
+                  <NavItem>
+                    <NavLink className="nav-link-icon" to="/" tag={Link}>
+                      <i className="ni ni-app" />
+                      <span className="nav-link-inner--text">Upravljačka ploča</span>
+                    </NavLink>
+                  </NavItem>
+                ) : null
+                }                                
               </Nav>
             </UncontrolledCollapse>
           </Container>
@@ -105,4 +124,8 @@ class AdminNavbar extends React.Component {
   }
 }
 
-export default AdminNavbar;
+const mapStateToProps = state => ({
+  auth: state.auth
+});
+
+export default connect(mapStateToProps, null)(AdminNavbar);

@@ -16,6 +16,11 @@
 
 */
 import React from "react";
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import { register } from '../../actions/authActions';
+import { clearErrors } from '../../actions/errorActions';
+import { withRouter } from 'react-router-dom';
 
 import ReactDatetime from "react-datetime";
 
@@ -32,7 +37,8 @@ import {
   InputGroupText,
   InputGroup,
   Row,
-  Col
+  Col,
+  Alert
 } from "reactstrap";
 
 //lokalizacija datuma
@@ -46,12 +52,74 @@ var valid = function( current ){
 };
 
 class Register extends React.Component {
+
+  state = {
+    ime: '',
+    prezime: '',
+    datumRod: null,
+    mail: '',
+    korisnickoIme: '',
+    lozinka: '',
+    msg: null
+  };
+
+  static propTypes = {
+    isAuthenticated: PropTypes.bool,
+    error: PropTypes.object.isRequired,
+    register: PropTypes.func.isRequired,
+    clearErrors: PropTypes.func.isRequired
+  }
+
+  componentDidUpdate(prevProps) {
+    //postavljanje/uklanjanje poruke pogreske
+    const { error, isAuthenticated } = this.props;
+    if(error !== prevProps.error) {
+      if(error.id === 'REGISTER_FAIL') {
+        this.setState({ msg: error.msg.msg });
+      }
+      else {
+        this.setState({ msg: null });
+      }
+    }
+
+    //redirect nakon uspjesne registracije
+    if(isAuthenticated){
+      this.props.history.push("/");
+    }
+  }
+
+  onChange = e => {
+    this.setState({ [e.target.name]: e.target.value});
+  };
+
+  onSubmit = e => {
+    e.preventDefault();
+
+    //slanje podataka za registraciju
+    const { ime, prezime, mail, korisnickoIme, lozinka } = this.state;
+
+    const datumRod =  moment(this.state.datumRod).format("YYYY-MM-DD");
+
+    //user object
+    const newUser = {
+      ime,
+      prezime,
+      datumRod,
+      mail,
+      korisnickoIme,
+      lozinka
+    };
+
+    this.props.register(newUser);
+  }
+
   render() {
     return (
       <>
         <Col lg="6" md="8">
           <Card className="bg-secondary shadow border-0">
             <CardBody className="px-lg-5 py-lg-5">
+              { this.state.msg ? (<Alert color="danger">{this.state.msg}</Alert>) : null }
               <div className="text-center text-muted mb-4">
                 <small>Registrirajte se</small>
               </div>
@@ -63,7 +131,7 @@ class Register extends React.Component {
                         <i className="ni ni-single-02" />
                       </InputGroupText>
                     </InputGroupAddon>
-                    <Input placeholder="Ime" type="text" />
+                    <Input placeholder="Ime" type="text" name="ime" onChange={this.onChange}/>
                   </InputGroup>
                 </FormGroup>
                 <FormGroup>
@@ -73,7 +141,7 @@ class Register extends React.Component {
                         <i className="ni ni-single-02" />
                       </InputGroupText>
                     </InputGroupAddon>
-                    <Input placeholder="Prezime" type="text" />
+                    <Input placeholder="Prezime" type="text" name="prezime" onChange={this.onChange}/>
                   </InputGroup>
                 </FormGroup>
                 <FormGroup>
@@ -89,7 +157,7 @@ class Register extends React.Component {
                       isValidDate={valid}
                       //defaultValue={eighteen}
                       timeFormat={false}
-                      //onChange={e => this.setState({ startDate: e })}
+                      onChange={e => this.setState({ datumRod: e })}
                     />
                   </InputGroup>
                 </FormGroup>
@@ -100,7 +168,7 @@ class Register extends React.Component {
                         <i className="ni ni-email-83" />
                       </InputGroupText>
                     </InputGroupAddon>
-                    <Input placeholder="Email" type="email" autoComplete="new-email"/>
+                    <Input placeholder="Email" type="email" name="mail" autoComplete="new-email" onChange={this.onChange}/>
                   </InputGroup>
                 </FormGroup>
                 <FormGroup>
@@ -110,7 +178,7 @@ class Register extends React.Component {
                         <i className="ni ni-badge" />
                       </InputGroupText>
                     </InputGroupAddon>
-                    <Input placeholder="Korisničko ime" type="text" autoComplete="off"/>
+                    <Input placeholder="Korisničko ime" type="text" name="korisnickoIme" autoComplete="off" onChange={this.onChange}/>
                   </InputGroup>
                 </FormGroup>
                 <FormGroup>
@@ -120,7 +188,7 @@ class Register extends React.Component {
                         <i className="ni ni-lock-circle-open" />
                       </InputGroupText>
                     </InputGroupAddon>
-                    <Input placeholder="Lozinka" type="password" autoComplete="new-password"/>
+                    <Input placeholder="Lozinka" type="password" name="lozinka" autoComplete="new-password" onChange={this.onChange}/>
                   </InputGroup>
                 </FormGroup>
                 {/* <div className="text-muted font-italic">
@@ -152,7 +220,7 @@ class Register extends React.Component {
                   </Col>
                 </Row> */}
                 <div className="text-center">
-                  <Button className="mt-4" color="primary" type="button">
+                  <Button className="mt-4" color="primary" type="button" onClick={this.onSubmit}>
                     Stvorite račun
                   </Button>
                 </div>
@@ -165,4 +233,12 @@ class Register extends React.Component {
   }
 }
 
-export default Register;
+const mapStateToProps = state => ({
+  isAuthenticated: state.auth.isAuthenticated,
+  error: state.error
+});
+
+export default withRouter(connect(
+  mapStateToProps,
+  { register, clearErrors }
+)(Register));
