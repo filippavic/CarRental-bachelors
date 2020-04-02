@@ -58,6 +58,7 @@ class Register extends React.Component {
     mail: '',
     korisnickoIme: '',
     lozinka: '',
+    lozinkaConfirm: '',
     msg: null
   };
 
@@ -94,7 +95,7 @@ class Register extends React.Component {
     e.preventDefault();
 
     //slanje podataka za registraciju
-    const { ime, prezime, mail, korisnickoIme, lozinka } = this.state;
+    const { ime, prezime, mail, korisnickoIme, lozinka, lozinkaConfirm } = this.state;
 
     const datumRod =  moment(this.state.datumRod).format("YYYY-MM-DD");
 
@@ -108,7 +109,14 @@ class Register extends React.Component {
       lozinka
     };
 
-    this.props.register(newUser);
+    //provjera jesu li upisane identicne lozinke
+    if(lozinka === lozinkaConfirm){
+      //ako jesu, registriraj korisninka
+      this.props.register(newUser);
+    }
+    else{
+      this.setState({ msg: "Upisane lozinke su različite" });
+    }
   }
 
   render() {
@@ -155,6 +163,7 @@ class Register extends React.Component {
                       isValidDate={valid}
                       //defaultValue={eighteen}
                       timeFormat={false}
+                      viewDate={eighteen}
                       onChange={e => this.setState({ datumRod: e })}
                     />
                   </InputGroup>
@@ -187,6 +196,16 @@ class Register extends React.Component {
                       </InputGroupText>
                     </InputGroupAddon>
                     <Input placeholder="Lozinka" type="password" name="lozinka" autoComplete="new-password" onChange={this.onChange}/>
+                  </InputGroup>
+                </FormGroup>
+                <FormGroup>
+                  <InputGroup className="input-group-alternative">
+                    <InputGroupAddon addonType="prepend">
+                      <InputGroupText>
+                        <i className="ni ni-lock-circle-open" />
+                      </InputGroupText>
+                    </InputGroupAddon>
+                    <Input placeholder="Ponovno upišite lozinku" type="password" name="lozinkaConfirm" autoComplete="new-password" onChange={this.onChange}/>
                   </InputGroup>
                 </FormGroup>
                 {/* <div className="text-muted font-italic">

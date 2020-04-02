@@ -5,6 +5,7 @@ import React, { useEffect, useState, useRef } from 'react'
 import { Container, Row, Col, Alert, Button } from "reactstrap";
 import axios from 'axios';
 import Lottie from 'react-lottie';
+import { useSelector } from 'react-redux';
 
 import AuthNavbar from "../components/Navbars/AuthNavbar.js";
 import AuthFooter from "../components/Footers/AuthFooter.js";
@@ -39,6 +40,9 @@ export default function Start() {
     })
 
     const [isReady, setIsReady] = useState(false);
+
+    const userInfo = useSelector(state => state.auth.user);
+    const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
 
     //opcije za Lottie animaciju
     const defaultOptions = {
@@ -77,7 +81,8 @@ export default function Start() {
                         datumVrijemeDo: moment(values.endDate).format("YYYY-MM-DD HH:mm:ss")
             });
             setAlert(false);
-            setRazlika(values.razlika);
+            var razlika = (values.endDate).diff((values.startDate), "days")+1;
+            setRazlika(razlika);
             setIsReady(true);
         }
     }
@@ -88,11 +93,13 @@ export default function Start() {
     //funkcija sortiranje
     const toggleSort = () => {
         if (isSortedAscending){
-            setVehicleData(vehicleData.sort((a, b) => (b.iznos - a.iznos)));
+            let sortedVehicles = vehicleData.vehicles.sort((a, b) => (b.cijenapodanu - a.cijenapodanu));
+            setVehicleData({vehicles: sortedVehicles});
             setIsSortedAscending(false);
         }
         else{
-            setVehicleData(vehicleData.sort((a, b) => (a.iznos - b.iznos)));
+            let sortedVehicles = vehicleData.vehicles.sort((a, b) => (a.cijenapodanu - b.cijenapodanu));
+            setVehicleData({vehicles: sortedVehicles});
             setIsSortedAscending(true);
         }
     }
@@ -126,7 +133,9 @@ export default function Start() {
               <div className="header-body text-center mb-7">
                 <Row className="justify-content-center">
                   <Col lg="5" md="6">
-                    <h1 className="text-white">Dobrodošli!</h1>
+                    {isAuthenticated ? 
+                    (<h1 className="text-white">Dobrodošli, {userInfo.ime} {userInfo.prezime}!</h1>) : 
+                    (<h1 className="text-white">Dobrodošli!</h1>)}                   
                     <p className="text-lead text-light">
                       Izaberite željeni period iznajmljivanja te lokacije prikupljanja i vraćanja vozila
                       kako bi dobili prikaz dostupnih vozila.
@@ -179,7 +188,7 @@ export default function Start() {
             {isReady && !vehicleData.isFetching &&
               <div className="vehicle-list-menu">
                 <div className="vehicle-list-menu-left">
-                  <h3>U ponudi imamo {vehicleData.vehicles.length} {vehicleData.vehicles.length===1 ? "vozilo" : "vozila"}:</h3>
+                  <h3>U ponudi imamo {vehicleData.vehicles ? vehicleData.vehicles.length : ''} {vehicleData.vehicles && vehicleData.vehicles.length===1 ? "vozilo" : "vozila"}:</h3>
                 </div>
                 <div className="vehicle-list-menu-right"> 
                   <Button id="sort-button" color="primary" outline size="sm" type="button" onClick={() => toggleSort()}>
@@ -188,7 +197,7 @@ export default function Start() {
                 </div>
               </div>
             }            
-            {vehicleData.vehicles.map (vehicle => (
+            {vehicleData.vehicles && vehicleData.vehicles.map (vehicle => (
               <CarCard key={vehicle.sifvozilo} vehicle={vehicle} razlika={razlika}/>
             ))}
           </div>

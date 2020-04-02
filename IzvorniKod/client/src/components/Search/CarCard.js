@@ -8,7 +8,9 @@ import { Button } from "reactstrap";
 import './CarCard.css';
 
 export default function CarCard(props) {
-    const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
+    const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
+
+    var iznos = props.vehicle.cijenapodanu * props.razlika;
 
     return (
         <div className="car-card-cont">
@@ -38,11 +40,11 @@ export default function CarCard(props) {
                 <div className="car-card-right-price">
                     <div className="car-card-right-price-day">
                         <h5 id="price-title">Cijena po danu</h5>
-                        <h1 id="price-day">{props.vehicle.cijenaPoDanu} kn</h1>
+                        <h1 id="price-day">{props.vehicle.cijenapodanu} kn</h1>
                     </div>
                     <div className="car-card-right-price-total">
                         <h5 id="price-title">Ukupna cijena</h5>
-                        <h1 id="price-total">{props.vehicle.iznos} kn</h1>
+                        <h1 id="price-total">{iznos} kn</h1>
                     </div>
                 </div>
                 <div className="car-card-right-button">

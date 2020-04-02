@@ -15,7 +15,6 @@ import {
 //ucitavanje korisnika
 export const loadUser = () => (dispatch, getState) => {
     dispatch({ type: USER_LOADING});
-
     axios.get('/api/users/user', tokenConfig(getState))
     .then(res => dispatch({
         type: USER_LOADED,

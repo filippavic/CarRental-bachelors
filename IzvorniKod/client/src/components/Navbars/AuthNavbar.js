@@ -120,7 +120,7 @@ class AdminNavbar extends React.Component {
                 {isAuthenticated ? (
                   <NavItem>
                     <NavLink className="nav-link-icon" onClick={this.props.logout} href="#">
-                      <i className="ni ni-key-25" />
+                      <i className="ni ni-button-power" />
                       <span className="nav-link-inner--text">Odjava</span>
                     </NavLink>
                   </NavItem>

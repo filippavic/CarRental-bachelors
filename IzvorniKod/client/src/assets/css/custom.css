@@ -1,3 +1,8 @@
+::selection {
+    color: white;
+    background: #C04848;
+  }
+
 .bg-gradient-info {
     background: linear-gradient(87deg, #C04848 0, #480048 100%) !important; }
 
@@ -21,3 +26,8 @@
     color: #fff;
     background-color: rgb(150, 55, 55);
     border-color: rgb(150, 55, 55); }
+
+.btn-outline-primary:hover{
+    background-color: #C04848;
+    border-color: #C04848;
+}

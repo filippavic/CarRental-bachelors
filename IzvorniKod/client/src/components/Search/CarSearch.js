@@ -56,6 +56,17 @@ const reactSelectStyles = {
             ...defaultStyles,
             color: '#ADB5BD',
         }
+    },
+    option: (styles, { isFocused, isSelected }) => {
+        return {
+            ...styles,
+            backgroundColor: isSelected ? 'rgba(192, 72, 72, 0.4)' : isFocused ? 'rgba(192, 72, 72, 0.4)' : null,
+            color: 'black',          
+            ':active': {
+                ...styles[':active'],
+                backgroundColor:  'rgba(192, 72, 72, 0.6)',
+            },
+        };
     }
   }
 
@@ -95,10 +106,6 @@ class CarSearch extends React.Component {
     //slanje odabranih opcija parent komponenti
     handleSubmit = (e) => {
         e.preventDefault();
-        if (this.state.startDate && this.state.endDate){
-            var razlika = (this.state.endDate).diff((this.state.startDate), "days")+1;
-            this.setState({ razlika: razlika });
-        }
         this.props.handleClick(this.state);
     }
 
