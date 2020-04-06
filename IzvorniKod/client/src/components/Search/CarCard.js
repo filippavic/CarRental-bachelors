@@ -12,6 +12,19 @@ export default function CarCard(props) {
 
     var iznos = props.vehicle.cijenapodanu * props.razlika;
 
+    //slanje odabranih opcija parent komponenti
+    const handleReserve = (e) => {
+        e.preventDefault();
+
+        let values = {
+            sifvozilo: props.vehicle.sifvozilo,
+            iznosnajma: iznos,
+            registracija: props.vehicle.registratskaoznaka
+        };
+
+        props.reserve(values);
+    }
+
     return (
         <div className="car-card-cont">
             <div className="car-card-left">
@@ -49,7 +62,7 @@ export default function CarCard(props) {
                 </div>
                 <div className="car-card-right-button">
                     {isAuthenticated ? (
-                        <Button color="primary" type="button">
+                        <Button color="primary" type="button" onClick={(e) => {handleReserve(e)}}>
                             Rezerviraj
                         </Button>
                     ) : (

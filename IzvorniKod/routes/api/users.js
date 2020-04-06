@@ -41,6 +41,13 @@ router.post("/register", async function(req, res, next) {
                     mail: userData.mail
                 });
 
+                var sifkorisnik;
+
+                db.one('SELECT sifkorisnik FROM korisnik WHERE korisnickoime=$1',
+                [userData.korisnickoIme]).then(data => {
+                    sifkorisnik = data.sifkorisnik;
+                });
+
                 jwt.sign({korisnickoIme: userData.korisnickoIme}, process.env.SECRET_KEY, {expiresIn: 3600},
                     (err, token) => {
                         if(err) throw err;
@@ -52,7 +59,8 @@ router.post("/register", async function(req, res, next) {
                                 datumRod: userData.datumRod,
                                 korisnickoIme: userData.korisnickoIme,
                                 mail: userData.mail,
-                                sifvrstakorisnik: "1"
+                                sifvrstakorisnik: "1",
+                                sifkorisnik: sifkorisnik
                             }
                         })
                 })
@@ -75,7 +83,7 @@ router.post("/login", async function(req, res, next) {
     }
 
     //provjeri postoji li korisnik
-    db.one('SELECT sifkorisnik, ime, prezime, datumrod, mail, lozinka, sifvrstakorisnik FROM korisnik WHERE korisnickoime=$1',
+    db.one('SELECT sifkorisnik, ime, prezime, datumrod, mail, lozinka, sifvrstakorisnik, sifkorisnik FROM korisnik WHERE korisnickoime=$1',
     [userData.korisnickoIme]).then(data => {
 
         //salt & hash, spremanje u bazu
@@ -94,7 +102,8 @@ router.post("/login", async function(req, res, next) {
                             datumRod: data.datumrod,
                             korisnickoIme: userData.korisnickoIme,
                             mail: data.mail,
-                            sifvrstakorisnik: data.sifvrstakorisnik
+                            sifvrstakorisnik: data.sifvrstakorisnik,
+                            sifkorisnik: data.sifkorisnik
                         }
                     })
             })
@@ -107,7 +116,7 @@ router.post("/login", async function(req, res, next) {
 
 //dohvacanje korisnika
 router.get('/user', auth, (req, res) => {
-    db.one('SELECT ime, prezime, datumrod, korisnickoime, mail, sifvrstakorisnik FROM korisnik WHERE korisnickoime=$1',
+    db.one('SELECT ime, prezime, datumrod, korisnickoime, mail, sifvrstakorisnik, sifkorisnik FROM korisnik WHERE korisnickoime=$1',
     [req.user.korisnickoIme]).then(data => {
         res.send(data);
     });

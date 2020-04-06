@@ -29,5 +29,41 @@ router.get("/locations", async function(req, res, next) {
 });
 
 
+//rezerevacija automobila
+router.post("/reservation", async function(req, res, next) {
+    const reservationData = {
+        sifkorisnik: req.body.sifkorisnik,
+        sifvozilo: req.body.sifvozilo,
+        planiranidatumvrijemeod: req.body.datumVrijemeOd,
+        planiranidatumvrijemedo: req.body.datumVrijemeDo,
+        siflokprikupljanja: req.body.sifLokPrikupljanja,
+        siflokvracanja: req.body.sifLokVracanja,
+        iznosnajma: req.body.iznosnajma,
+        zavrsen: 'false'
+    };
+    
+    //provjera podataka
+    if(!reservationData.sifkorisnik || !reservationData.sifvozilo || !reservationData.planiranidatumvrijemeod || !reservationData.planiranidatumvrijemedo || !reservationData.siflokprikupljanja || !reservationData.siflokvracanja || !reservationData.iznosnajma){
+        return res.status(400).json({msg: "Došlo je do pogreške, pokušajte ponovno."});
+    }
+
+    db.none('INSERT INTO najam(sifkorisnik, sifvozilo, planiranidatumvrijemeod, planiranidatumvrijemedo, siflokprikupljanja, siflokvracanja, iznosnajma, zavrsen) VALUES(${sifkorisnik}, ${sifvozilo}, ${datumVrijemeOd}, ${datumVrijemeDo}, ${sifLokPrikupljanja}, ${sifLokVracanja}, ${iznosnajma}, ${zavrsen})', {
+        sifkorisnik: reservationData.sifkorisnik,
+        sifvozilo: reservationData.sifvozilo,
+        datumVrijemeOd: reservationData.planiranidatumvrijemeod,
+        datumVrijemeDo: reservationData.planiranidatumvrijemedo,
+        sifLokPrikupljanja: reservationData.siflokprikupljanja,
+        sifLokVracanja: reservationData.siflokvracanja,
+        iznosnajma: reservationData.iznosnajma,
+        zavrsen: reservationData.zavrsen
+    })
+    .catch(error => {
+        return res.status(400).json({ msg: 'Dogodila se pogreška'});
+    });
+
+    return res.status(200).json({ msg: 'Uspješno rezervirano'});
+});
+
+
 
 module.exports = router;

@@ -11,6 +11,7 @@ import AuthNavbar from "../components/Navbars/AuthNavbar.js";
 import AuthFooter from "../components/Footers/AuthFooter.js";
 import CarSearch from "../components/Search/CarSearch.js";
 import CarCard from "../components/Search/CarCard.js";
+import ConfirmModal from "../components/Search/ConfirmModal.js";
 
 import { loadUser } from '../actions/authActions';
 
@@ -40,9 +41,13 @@ export default function Start() {
     })
 
     const [isReady, setIsReady] = useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [resSuccess, setResSuccess] = useState(true);
+    const [registration, setRegistration] = useState("");
 
     const userInfo = useSelector(state => state.auth.user);
     const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
+    const isLoading = useSelector(state => state.auth.isLoading);
 
     //opcije za Lottie animaciju
     const defaultOptions = {
@@ -90,7 +95,7 @@ export default function Start() {
     //zatvori alert
     const onDismiss = () => setAlert(false);
 
-    //funkcija sortiranje
+    //sortiranje
     const toggleSort = () => {
         if (isSortedAscending){
             let sortedVehicles = vehicleData.vehicles.sort((a, b) => (b.cijenapodanu - a.cijenapodanu));
@@ -121,11 +126,55 @@ export default function Start() {
         if (didMount) fetchData();
     }, [options]);
 
+    //rezervacija
+    const reserveCar = (values) => {
+      //headers
+      const config = {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+      }
+
+      let reservationData = {
+        sifkorisnik: userInfo.sifkorisnik,
+        sifvozilo: values.sifvozilo,
+        datumVrijemeOd: options.datumVrijemeOd,
+        datumVrijemeDo: options.datumVrijemeDo,
+        sifLokPrikupljanja: options.sifLokPrikupljanja,
+        sifLokVracanja: options.sifLokVracanja,
+        iznosnajma: values.iznosnajma
+      };
+
+      setRegistration(values.registracija);
+
+      const body = JSON.stringify(reservationData);
+
+      axios.post('/api/start_page/reservation', body, config)
+      .then(res => {
+        setResSuccess(true);
+        setModalOpen(true);
+      })
+      .catch(err => {
+          setResSuccess(false);
+          setModalOpen(true);
+      });
+    }
+
+    //zatvori modal
+    const handleCloseModal = () => {
+      setModalOpen(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setTimeout(function() {
+        setIsReady(false);
+      }, 700);     
+  }
+
 
     return (
         <>
+        {modalOpen ? (<ConfirmModal success={resSuccess} registracija={registration} handleClose={() => handleCloseModal()}/>) : null}
         <div className="main-content">
-          <AuthNavbar />
+          {didMount && !isLoading ? (<AuthNavbar />) : null}
 
           {/* Header stranice */}
           <div className="header bg-gradient-info py-7 py-lg-8">     
@@ -133,7 +182,7 @@ export default function Start() {
               <div className="header-body text-center mb-7">
                 <Row className="justify-content-center">
                   <Col lg="5" md="6">
-                    {isAuthenticated ? 
+                    {didMount && !isLoading && isAuthenticated ? 
                     (<h1 className="text-white">Dobrodošli, {userInfo.ime} {userInfo.prezime}!</h1>) : 
                     (<h1 className="text-white">Dobrodošli!</h1>)}                   
                     <p className="text-lead text-light">
@@ -162,7 +211,7 @@ export default function Start() {
           </div>
 
           {/* Sadrzaj stranice */}
-          
+
           <Container className="mt--8 pb-5">
             <Row className="justify-content-center">
                 {alert &&
@@ -188,6 +237,7 @@ export default function Start() {
             {isReady && !vehicleData.isFetching &&
               <div className="vehicle-list-menu">
                 <div className="vehicle-list-menu-left">
+                  
                   <h3>U ponudi imamo {vehicleData.vehicles ? vehicleData.vehicles.length : ''} {vehicleData.vehicles && vehicleData.vehicles.length===1 ? "vozilo" : "vozila"}:</h3>
                 </div>
                 <div className="vehicle-list-menu-right"> 
@@ -197,8 +247,8 @@ export default function Start() {
                 </div>
               </div>
             }            
-            {vehicleData.vehicles && vehicleData.vehicles.map (vehicle => (
-              <CarCard key={vehicle.sifvozilo} vehicle={vehicle} razlika={razlika}/>
+            {isReady && vehicleData.vehicles && vehicleData.vehicles.map (vehicle => (
+              <CarCard key={vehicle.sifvozilo} vehicle={vehicle} razlika={razlika} reserve={(values) => reserveCar(values)}/>
             ))}
           </div>
         </div>
