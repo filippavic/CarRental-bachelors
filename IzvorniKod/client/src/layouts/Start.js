@@ -47,7 +47,6 @@ export default function Start() {
 
     const userInfo = useSelector(state => state.auth.user);
     const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
-    const isLoading = useSelector(state => state.auth.isLoading);
 
     //opcije za Lottie animaciju
     const defaultOptions = {
@@ -174,7 +173,7 @@ export default function Start() {
         <>
         {modalOpen ? (<ConfirmModal success={resSuccess} registracija={registration} handleClose={() => handleCloseModal()}/>) : null}
         <div className="main-content">
-          {didMount && !isLoading ? (<AuthNavbar />) : null}
+          {didMount ? (<AuthNavbar />) : null}
 
           {/* Header stranice */}
           <div className="header bg-gradient-info py-7 py-lg-8">     
@@ -182,7 +181,7 @@ export default function Start() {
               <div className="header-body text-center mb-7">
                 <Row className="justify-content-center">
                   <Col lg="5" md="6">
-                    {didMount && !isLoading && isAuthenticated ? 
+                    {didMount && isAuthenticated ? 
                     (<h1 className="text-white">Dobrodošli, {userInfo.ime} {userInfo.prezime}!</h1>) : 
                     (<h1 className="text-white">Dobrodošli!</h1>)}                   
                     <p className="text-lead text-light">
