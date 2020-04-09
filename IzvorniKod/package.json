@@ -12,6 +12,7 @@
   },
   "author": "Filip Pavić",
   "dependencies": {
+    "@react-pdf/renderer": "^1.6.8",
     "axios": "^0.19.2",
     "bcryptjs": "^2.4.3",
     "config": "^3.2.3",

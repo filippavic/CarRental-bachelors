@@ -28,6 +28,7 @@
     animation-timing-function: cubic-bezier(0.455, 0.03, 0.515, 0.955);
 }
 
+
 .confirm-modal-top{
     height: 40%;
     display: flex;
@@ -61,6 +62,16 @@
     height: 30%;
     display: flex;
     align-items: center;
+    flex-direction: column-reverse;
+    justify-content: space-evenly;
+}
+
+.confirm-modal-bottom a:hover {
+    color: #C04848;
+}
+
+.confirm-modal-bottom a {
+    color: #1C1C1E;
 }
 
 @keyframes openModal {

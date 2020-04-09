@@ -7,7 +7,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use("/api/start_page", require("./routes/api/start_page"));
+app.use("/api/user_page", require("./routes/api/user_page"));
 app.use("/api/users", require("./routes/api/users"));
+
 
 // app.use(express.static(path.join(__dirname, "build")));
 // app.get("*", (req, res) =>

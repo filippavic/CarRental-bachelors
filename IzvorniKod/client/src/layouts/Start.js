@@ -43,7 +43,14 @@ export default function Start() {
     const [isReady, setIsReady] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
     const [resSuccess, setResSuccess] = useState(true);
-    const [registration, setRegistration] = useState("");
+    const [reservationInfo, setReservationInfo] = useState({
+      registration: null,
+      puninaziv: null,
+      urlslika: null,
+      iznos: null,
+      time: null
+    });
+    const [sifNajam, setSifNajam] = useState("");
 
     const userInfo = useSelector(state => state.auth.user);
     const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
@@ -144,12 +151,13 @@ export default function Start() {
         iznosnajma: values.iznosnajma
       };
 
-      setRegistration(values.registracija);
+      setReservationInfo({registration: values.registracija, puninaziv: values.puninaziv, urlslika: values.urlslika, iznos: values.iznosnajma, time: moment().format('DD.MM.YYYY. HH:mm:ss')});
 
       const body = JSON.stringify(reservationData);
 
       axios.post('/api/start_page/reservation', body, config)
       .then(res => {
+        setSifNajam(res.data.sifnajam);
         setResSuccess(true);
         setModalOpen(true);
       })
@@ -171,7 +179,8 @@ export default function Start() {
 
     return (
         <>
-        {modalOpen ? (<ConfirmModal success={resSuccess} registracija={registration} handleClose={() => handleCloseModal()}/>) : null}
+        {modalOpen ? (<ConfirmModal success={resSuccess} reservationInfo={reservationInfo} userInfo={userInfo} sifnajam={sifNajam}
+        handleClose={() => handleCloseModal()}/>) : null}
         <div className="main-content">
           {didMount ? (<AuthNavbar />) : null}
 

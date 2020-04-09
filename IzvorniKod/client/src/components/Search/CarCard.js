@@ -19,7 +19,9 @@ export default function CarCard(props) {
         let values = {
             sifvozilo: props.vehicle.sifvozilo,
             iznosnajma: iznos,
-            registracija: props.vehicle.registratskaoznaka
+            registracija: props.vehicle.registratskaoznaka,
+            puninaziv: props.vehicle.nazivproizvodac + " " + props.vehicle.nazivmodel,
+            urlslika: props.vehicle.urlslika
         };
 
         props.reserve(values);
