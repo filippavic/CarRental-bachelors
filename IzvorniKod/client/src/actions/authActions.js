@@ -9,24 +9,56 @@ import {
     LOGIN_FAIL,
     LOGOUT_SUCCESS,
     REGISTER_SUCCESS,
-    REGISTER_FAIL
+    REGISTER_FAIL,
+    TOKEN_LOADED
 } from "./types";
 
+//Load Token
+export const loadToken = () => async dispatch => {
+    if (sessionStorage.token) {
+      return dispatch({
+        type: TOKEN_LOADED,
+        payload: sessionStorage.getItem("token")
+      });
+    } else {
+      dispatch({
+        type: AUTH_ERROR
+      });
+    }
+};
+
 //ucitavanje korisnika
-export const loadUser = () => (dispatch, getState) => {
+// export const loadUser = () => (dispatch, getState) => {
+//     dispatch({ type: USER_LOADING});
+//     axios.get('/api/users/user', tokenConfig(getState))
+//     .then(res => dispatch({
+//         type: USER_LOADED,
+//         payload: res.data
+//     }))
+//     .catch(err => {
+//         //dispatch(returnErrors(err.response.data, err.response.status));
+//         dispatch({
+//             type: AUTH_ERROR
+//         });
+//     });
+// };
+export const loadUser = () => async (dispatch, getStore) => {
     dispatch({ type: USER_LOADING});
-    axios.get('/api/users/user', tokenConfig(getState))
-    .then(res => dispatch({
+    try {
+      const header = makeAuthTokenHeader(getStore().auth.token);
+      const res = await axios.get("/api/users/user", header);
+  
+      dispatch({
         type: USER_LOADED,
         payload: res.data
-    }))
-    .catch(err => {
-        //dispatch(returnErrors(err.response.data, err.response.status));
-        dispatch({
-            type: AUTH_ERROR
-        });
-    });
-};
+      });
+    } catch (err) {
+      dispatch({
+        type: AUTH_ERROR
+      });
+    }
+  };
+
 
 //registracija korisnika
 export const register = ({ ime, prezime, datumRod, mail, korisnickoIme, lozinka }) => dispatch => {
@@ -103,3 +135,16 @@ export const tokenConfig = getState => {
 
     return config;
 }
+
+export const makeAuthTokenHeader = token => {
+    if (token) {
+      axios.defaults.headers.common["x-auth-token"] = token;
+      return {
+        headers: {
+          "x-auth-token": token
+        }
+      };
+    } else {
+      throw new Error("Token nedostaje");
+    }
+  };

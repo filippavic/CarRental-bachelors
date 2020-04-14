@@ -22,6 +22,7 @@ import Register from "./views/examples/Register.js";
 import Login from "./views/examples/Login.js";
 import Tables from "./views/examples/Tables.js";
 import Icons from "./views/examples/Icons.js";
+import Rezervacije from "./views/Rezervacije.js";
 
 var routes = [
   {
@@ -72,6 +73,13 @@ var routes = [
     icon: "ni ni-circle-08 text-pink",
     component: Register,
     layout: "/auth"
+  },
+  {
+    path: "/rezervacije",
+    name: "Rezervacije",
+    icon: "ni ni-circle-08 text-pink",
+    component: Rezervacije,
+    layout: "/user"
   }
 ];
 export default routes;

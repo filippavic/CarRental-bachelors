@@ -20,6 +20,7 @@ import React from "react";
 import { NavLink as NavLinkRRD, Link } from "react-router-dom";
 // nodejs library to set properties for components
 import { PropTypes } from "prop-types";
+import { connect } from 'react-redux';
 
 // reactstrap components
 import {
@@ -101,12 +102,12 @@ class Sidebar extends React.Component {
     let navbarBrandProps;
     if (logo && logo.innerLink) {
       navbarBrandProps = {
-        to: logo.innerLink,
+        to: "/",
         tag: Link
       };
     } else if (logo && logo.outterLink) {
       navbarBrandProps = {
-        href: logo.outterLink,
+        href: "/",
         target: "_blank"
       };
     }
@@ -128,16 +129,12 @@ class Sidebar extends React.Component {
           {/* Brand */}
           {logo ? (
             <NavbarBrand className="pt-0" {...navbarBrandProps}>
-              <img
-                alt={logo.imgAlt}
-                className="navbar-brand-img"
-                src={logo.imgSrc}
-              />
+              <h1>Rent-a-car</h1>
             </NavbarBrand>
           ) : null}
           {/* User */}
           <Nav className="align-items-center d-md-none">
-            <UncontrolledDropdown nav>
+            {/* <UncontrolledDropdown nav>
               <DropdownToggle nav className="nav-link-icon">
                 <i className="ni ni-bell-55" />
               </DropdownToggle>
@@ -151,27 +148,24 @@ class Sidebar extends React.Component {
                 <DropdownItem divider />
                 <DropdownItem>Something else here</DropdownItem>
               </DropdownMenu>
-            </UncontrolledDropdown>
+            </UncontrolledDropdown> */}
             <UncontrolledDropdown nav>
               <DropdownToggle nav>
                 <Media className="align-items-center">
-                  <span className="avatar avatar-sm rounded-circle">
-                    <img
-                      alt="..."
-                      src={require("../../assets/img/theme/team-1-800x800.jpg")}
-                    />
+                  <span>
+                    <i className="ni ni-circle-08"></i>
                   </span>
                 </Media>
               </DropdownToggle>
               <DropdownMenu className="dropdown-menu-arrow" right>
                 <DropdownItem className="noti-title" header tag="div">
-                  <h6 className="text-overflow m-0">Welcome!</h6>
+                  <h6 className="text-overflow m-0">Dobrodošli!</h6>
                 </DropdownItem>
                 <DropdownItem to="/admin/user-profile" tag={Link}>
                   <i className="ni ni-single-02" />
-                  <span>My profile</span>
+                  <span>Moji podaci</span>
                 </DropdownItem>
-                <DropdownItem to="/admin/user-profile" tag={Link}>
+                {/* <DropdownItem to="/admin/user-profile" tag={Link}>
                   <i className="ni ni-settings-gear-65" />
                   <span>Settings</span>
                 </DropdownItem>
@@ -182,11 +176,11 @@ class Sidebar extends React.Component {
                 <DropdownItem to="/admin/user-profile" tag={Link}>
                   <i className="ni ni-support-16" />
                   <span>Support</span>
-                </DropdownItem>
+                </DropdownItem> */}
                 <DropdownItem divider />
                 <DropdownItem href="#pablo" onClick={e => e.preventDefault()}>
                   <i className="ni ni-user-run" />
-                  <span>Logout</span>
+                  <span>Odjava</span>
                 </DropdownItem>
               </DropdownMenu>
             </UncontrolledDropdown>
@@ -196,19 +190,11 @@ class Sidebar extends React.Component {
             {/* Collapse header */}
             <div className="navbar-collapse-header d-md-none">
               <Row>
-                {logo ? (
-                  <Col className="collapse-brand" xs="6">
-                    {logo.innerLink ? (
-                      <Link to={logo.innerLink}>
-                        <img alt={logo.imgAlt} src={logo.imgSrc} />
-                      </Link>
-                    ) : (
-                      <a href={logo.outterLink}>
-                        <img alt={logo.imgAlt} src={logo.imgSrc} />
-                      </a>
-                    )}
-                  </Col>
-                ) : null}
+                <Col className="collapse-brand" xs="6">
+                  <a href="/">
+                    {this.props.auth.user.ime} {this.props.auth.user.prezime}
+                  </a>
+                </Col>
                 <Col className="collapse-close" xs="6">
                   <button
                     className="navbar-toggler"
@@ -222,7 +208,7 @@ class Sidebar extends React.Component {
               </Row>
             </div>
             {/* Form */}
-            <Form className="mt-4 mb-3 d-md-none">
+            {/* <Form className="mt-4 mb-3 d-md-none">
               <InputGroup className="input-group-rounded input-group-merge">
                 <Input
                   aria-label="Search"
@@ -236,15 +222,15 @@ class Sidebar extends React.Component {
                   </InputGroupText>
                 </InputGroupAddon>
               </InputGroup>
-            </Form>
+            </Form> */}
             {/* Navigation */}
             <Nav navbar>{this.createLinks(routes)}</Nav>
             {/* Divider */}
-            <hr className="my-3" />
+            {/* <hr className="my-3" /> */}
             {/* Heading */}
-            <h6 className="navbar-heading text-muted">Documentation</h6>
+            {/* <h6 className="navbar-heading text-muted">Documentation</h6> */}
             {/* Navigation */}
-            <Nav className="mb-md-3" navbar>
+            {/* <Nav className="mb-md-3" navbar>
               <NavItem>
                 <NavLink href="https://demos.creative-tim.com/argon-dashboard-react/#/documentation/overview?ref=adr-admin-sidebar">
                   <i className="ni ni-spaceship" />
@@ -271,7 +257,7 @@ class Sidebar extends React.Component {
                   Upgrade to PRO
                 </NavLink>
               </NavItem>
-            </Nav>
+            </Nav> */}
           </Collapse>
         </Container>
       </Navbar>
@@ -300,4 +286,8 @@ Sidebar.propTypes = {
   })
 };
 
-export default Sidebar;
+const mapStateToProps = state => ({
+  auth: state.auth
+});
+
+export default connect(mapStateToProps, {})(Sidebar);

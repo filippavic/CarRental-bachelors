@@ -110,7 +110,7 @@ class AdminNavbar extends React.Component {
                 }
                 {isAuthenticated ? (
                   <NavItem>
-                    <NavLink className="nav-link-icon" to="/" tag={Link}>
+                    <NavLink className="nav-link-icon" to="/user" tag={Link}>
                       <i className="ni ni-app" />
                       <span className="nav-link-inner--text">Upravljačka ploča</span>
                     </NavLink>
