@@ -29,7 +29,7 @@ class UserHeader2 extends React.Component {
         <div className="header bg-gradient-info pb-8 pt-5 pt-md-8" style={{zIndex:"-1"}}>
           <Container fluid>
             <div className="header-body">
-              <Row style={{justifyContent:"center"}}>
+              <Row style={{flexDirection:'column', alignItems:"center"}}>
                 {this.props.reservations && this.props.reservations.length === 0 ? (<h1 style={{color: '#ffffff'}}>Trenutno nemate aktivne rezervacije.</h1>) : (<h1 style={{color: '#ffffff'}}>Trenutne rezervacije</h1>)}           
                 <h4 style={{color: '#ffffff', fontWeight: 300}}>Ovdje možete vidjeti trenutno aktivne rezervacije. Rezervaciju možete poništiti najkasnije tjedan dana prije početka.</h4>
               </Row>

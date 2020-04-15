@@ -1,20 +1,20 @@
 {
   "files": {
-    "main.css": "/static/css/main.42d95d0e.chunk.css",
-    "main.js": "/static/js/main.5692e11d.chunk.js",
-    "main.js.map": "/static/js/main.5692e11d.chunk.js.map",
+    "main.css": "/static/css/main.2dd6ad0a.chunk.css",
+    "main.js": "/static/js/main.21c7a666.chunk.js",
+    "main.js.map": "/static/js/main.21c7a666.chunk.js.map",
     "runtime-main.js": "/static/js/runtime-main.20094543.js",
     "runtime-main.js.map": "/static/js/runtime-main.20094543.js.map",
     "static/css/2.79838944.chunk.css": "/static/css/2.79838944.chunk.css",
-    "static/js/2.472057ea.chunk.js": "/static/js/2.472057ea.chunk.js",
-    "static/js/2.472057ea.chunk.js.map": "/static/js/2.472057ea.chunk.js.map",
+    "static/js/2.08e94a37.chunk.js": "/static/js/2.08e94a37.chunk.js",
+    "static/js/2.08e94a37.chunk.js.map": "/static/js/2.08e94a37.chunk.js.map",
     "index.html": "/index.html",
-    "precache-manifest.6cc1e9cbcad166f69adfe119830a3781.js": "/precache-manifest.6cc1e9cbcad166f69adfe119830a3781.js",
+    "precache-manifest.8bd42cbf56d57d8c1cae44e1fbbb71c4.js": "/precache-manifest.8bd42cbf56d57d8c1cae44e1fbbb71c4.js",
     "service-worker.js": "/service-worker.js",
     "static/css/2.79838944.chunk.css.map": "/static/css/2.79838944.chunk.css.map",
-    "static/css/main.42d95d0e.chunk.css.map": "/static/css/main.42d95d0e.chunk.css.map",
-    "static/js/2.472057ea.chunk.js.LICENSE.txt": "/static/js/2.472057ea.chunk.js.LICENSE.txt",
-    "static/js/main.5692e11d.chunk.js.LICENSE.txt": "/static/js/main.5692e11d.chunk.js.LICENSE.txt",
+    "static/css/main.2dd6ad0a.chunk.css.map": "/static/css/main.2dd6ad0a.chunk.css.map",
+    "static/js/2.08e94a37.chunk.js.LICENSE.txt": "/static/js/2.08e94a37.chunk.js.LICENSE.txt",
+    "static/js/main.21c7a666.chunk.js.LICENSE.txt": "/static/js/main.21c7a666.chunk.js.LICENSE.txt",
     "static/media/angular.jpg": "/static/media/angular.368685db.jpg",
     "static/media/argon-react.png": "/static/media/argon-react.f38ddea9.png",
     "static/media/bootstrap.jpg": "/static/media/bootstrap.ab904daa.jpg",
@@ -32,8 +32,8 @@
   "entrypoints": [
     "static/js/runtime-main.20094543.js",
     "static/css/2.79838944.chunk.css",
-    "static/js/2.472057ea.chunk.js",
-    "static/css/main.42d95d0e.chunk.css",
-    "static/js/main.5692e11d.chunk.js"
+    "static/js/2.08e94a37.chunk.js",
+    "static/css/main.2dd6ad0a.chunk.css",
+    "static/js/main.21c7a666.chunk.js"
   ]
 }
