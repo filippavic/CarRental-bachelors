@@ -10,7 +10,10 @@ import {
     LOGOUT_SUCCESS,
     REGISTER_SUCCESS,
     REGISTER_FAIL,
-    TOKEN_LOADED
+    TOKEN_LOADED,
+    CHANGE_USRN_SUCCESS,
+    CHANGE_SUCCESS,
+    CHANGE_FAIL
 } from "./types";
 
 //Load Token
@@ -106,6 +109,54 @@ export const login = ({ korisnickoIme, lozinka }) => dispatch => {
             type: LOGIN_FAIL
         });
     });
+}
+
+//promjena podataka
+export const changeUserInfo = ({ ime, prezime, datumRod, mail, korisnickoIme, lozinka, sifKorisnik }) => dispatch => {
+  //headers
+  const config = {
+      headers: {
+          'Content-Type': 'application/json'
+      }
+  }
+
+  const body = JSON.stringify({ ime, prezime, datumRod, mail, korisnickoIme, lozinka, sifKorisnik });
+
+  axios.post('/api/users/changeuserinfo', body, config)
+  .then(res => dispatch({
+      type: CHANGE_SUCCESS,
+      payload: res.data
+  }))
+  .catch(err => {
+      dispatch(returnErrors(err.response.data, err.response.status, 'CHANGE_FAIL'));
+      dispatch({
+          type: CHANGE_FAIL
+      });
+  });
+}
+
+//promjena podataka (bez lozinke)
+export const changeUsername = ({ ime, prezime, datumRod, mail, korisnickoIme, sifKorisnik }) => dispatch => {
+  //headers
+  const config = {
+      headers: {
+          'Content-Type': 'application/json'
+      }
+  }
+
+  const body = JSON.stringify({ ime, prezime, datumRod, mail, korisnickoIme, sifKorisnik });
+
+  axios.post('/api/users/changeusername', body, config)
+  .then(res => dispatch({
+      type: CHANGE_USRN_SUCCESS,
+      payload: res.data
+  }))
+  .catch(err => {
+      dispatch(returnErrors(err.response.data, err.response.status, 'CHANGE_FAIL'));
+      dispatch({
+          type: CHANGE_FAIL
+      });
+  });
 }
 
 

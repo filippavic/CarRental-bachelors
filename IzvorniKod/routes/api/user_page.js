@@ -33,7 +33,7 @@ router.get('/paststats/:sifkorisnik', auth, (req, res) => {
     res.setHeader("content-type", "application/json");
     res.setHeader("accept", "application/json");
     
-    db.one('SELECT count(*) AS brnajmova, SUM(iznosnajma) AS sumaiznos FROM najam WHERE sifkorisnik=22 AND zavrsen=true',
+    db.one('SELECT count(*) AS brnajmova, SUM(iznosnajma) AS sumaiznos FROM najam WHERE sifkorisnik=$1 AND zavrsen=true',
     [req.params.sifkorisnik]).then(data => {
         res.send(data);
     });

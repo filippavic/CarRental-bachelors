@@ -125,7 +125,6 @@ export default function Start() {
               setIsReady(true);
               scrollToRef(vehicleRef);
           } catch (e) {
-              console.log(e);
               setVehicleData({vehicles: vehicleData.vehicles, isFetching: false});
           }
           };

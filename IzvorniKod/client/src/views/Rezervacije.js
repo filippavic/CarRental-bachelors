@@ -31,7 +31,6 @@ import {
 import UserHeader2 from "../components/Headers/UserHeader2.js";
 import RentCard from "../components/UserPage/RentCard.js";
 
-import ReactLoading from 'react-loading';
 
 class Rezervacije extends React.Component {
   constructor(props) {

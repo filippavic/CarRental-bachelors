@@ -161,10 +161,10 @@ class Sidebar extends React.Component {
                 <DropdownItem className="noti-title" header tag="div">
                   <h6 className="text-overflow m-0">Dobrodošli!</h6>
                 </DropdownItem>
-                <DropdownItem to="/admin/user-profile" tag={Link}>
+                {/* <DropdownItem to="/admin/user-profile" tag={Link}>
                   <i className="ni ni-single-02" />
                   <span>Moji podaci</span>
-                </DropdownItem>
+                </DropdownItem> */}
                 {/* <DropdownItem to="/admin/user-profile" tag={Link}>
                   <i className="ni ni-settings-gear-65" />
                   <span>Settings</span>
@@ -177,7 +177,7 @@ class Sidebar extends React.Component {
                   <i className="ni ni-support-16" />
                   <span>Support</span>
                 </DropdownItem> */}
-                <DropdownItem divider />
+                {/* <DropdownItem divider /> */}
                 <DropdownItem href="#pablo" onClick={e => e.preventDefault()}>
                   <i className="ni ni-user-run" />
                   <span>Odjava</span>

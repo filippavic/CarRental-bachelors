@@ -17,6 +17,7 @@
 */
 import Rezervacije from "./views/Rezervacije.js";
 import Povijest from "./views/Povijest.js";
+import UserProfile from "./views/UserProfile.js";
 
 var userRoutes = [
   {
@@ -31,6 +32,13 @@ var userRoutes = [
     name: "Povijest",
     icon: "ni ni-archive-2",
     component: Povijest,
+    layout: "/user"
+  },
+  {
+    path: "/profile",
+    name: "Profil",
+    icon: "ni ni-circle-08",
+    component: UserProfile,
     layout: "/user"
   }
 ];

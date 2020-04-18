@@ -16,11 +16,18 @@
 
 */
 import React from "react";
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 
 // reactstrap components
-import { Button, Container, Row, Col } from "reactstrap";
+import { Container, Row, Col } from "reactstrap";
 
 class UserHeader extends React.Component {
+
+  static propTypes = {
+    auth: PropTypes.object.isRequired
+  }
+
   render() {
     return (
       <>
@@ -39,19 +46,11 @@ class UserHeader extends React.Component {
           {/* Header container */}
           <Container className="d-flex align-items-center" fluid>
             <Row>
-              <Col lg="7" md="10">
-                <h1 className="display-2 text-white">Hello Jesse</h1>
+              <Col>
+                <h1 className="display-2 text-white">Pozdrav, {this.props.auth.user.ime} {this.props.auth.user.prezime}</h1>
                 <p className="text-white mt-0 mb-5">
-                  This is your profile page. You can see the progress you've
-                  made with your work and manage your projects or assigned tasks
+                  Ovdje možete pregledati i urediti svoje podatke.
                 </p>
-                <Button
-                  color="info"
-                  href="#pablo"
-                  onClick={e => e.preventDefault()}
-                >
-                  Edit profile
-                </Button>
               </Col>
             </Row>
           </Container>
@@ -61,4 +60,8 @@ class UserHeader extends React.Component {
   }
 }
 
-export default UserHeader;
+const mapStateToProps = state => ({
+  auth: state.auth
+});
+
+export default connect(mapStateToProps, {})(UserHeader);

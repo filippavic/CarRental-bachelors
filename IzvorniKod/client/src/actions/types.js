@@ -9,3 +9,6 @@ export const REGISTER_FAIL = "REGISTER_FAIL";
 export const GET_ERRORS = "GET_ERRORS";
 export const CLEAR_ERRORS = "CLEAR_ERRORS";
 export const TOKEN_LOADED = "TOKEN_LOADED";
+export const CHANGE_SUCCESS = "CHANGE_SUCCESS";
+export const CHANGE_USRN_SUCCESS = "CHANGE_USRN_SUCCESS";
+export const CHANGE_FAIL = "CHANGE_FAIL";
