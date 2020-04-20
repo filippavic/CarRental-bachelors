@@ -77,7 +77,7 @@ class UserProfile extends React.Component {
         const { error } = this.props;
         if(error !== prevProps.error) {
           if(error.id === 'CHANGE_FAIL') {
-            this.setState({ msg: error.msg.msg });
+            this.setState({ msg: error.msg.msg, editMode: true, novoKorisnickoIme: this.state.trenKorisnickoIme });
           }
           else {
             this.setState({ msg: null });
@@ -105,7 +105,6 @@ class UserProfile extends React.Component {
 
     finishEdit = e => {
         e.preventDefault();
-        this.setState({editMode: false});
 
         const { ime, prezime, mail, trenKorisnickoIme, novoKorisnickoIme, novoKorisnickoImeConfirm, lozinka, novaLozinka, sifKorisnik } = this.state;
 
@@ -146,6 +145,7 @@ class UserProfile extends React.Component {
             if(lozinka === novaLozinka && novoKorisnickoIme === novoKorisnickoImeConfirm){
             //ako jesu, azuriraj podatke
             this.props.changeUserInfo(updateUser);
+            this.setState({editMode: false, usernameChange: false, passChange: false});
             }
             else{
                 this.setState({ msg: "Upisani podaci su različiti" });
@@ -157,11 +157,13 @@ class UserProfile extends React.Component {
             }
             else if (!novoKorisnickoIme && !novoKorisnickoImeConfirm){
                 this.props.changeUserInfo(updateUser);
+                this.setState({editMode: false, usernameChange: false, passChange: false});
             }
         }
         else if (novoKorisnickoIme && novoKorisnickoImeConfirm){
             if(novoKorisnickoIme === novoKorisnickoImeConfirm){
                 this.props.changeUsername(updateUser2);
+                this.setState({editMode: false, usernameChange: false});
             }
             else{
                 this.setState({ msg: "Upisana korisnička imena su različita" });
