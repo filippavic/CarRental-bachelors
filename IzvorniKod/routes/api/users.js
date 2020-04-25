@@ -15,7 +15,8 @@ router.post("/register", async function(req, res, next) {
         datumRod: req.body.datumRod,
         mail: req.body.mail,
 		korisnickoIme: req.body.korisnickoIme,
-		lozinka: req.body.lozinka
+        lozinka: req.body.lozinka,
+        vrijeme: req.body.vrijeme
     };
     
     if(!userData.ime || !userData.prezime || !userData.datumRod || !userData.mail || !userData.korisnickoIme || !userData.lozinka){
@@ -32,13 +33,14 @@ router.post("/register", async function(req, res, next) {
             bcrypt.hash(userData.lozinka, salt, (err, hash) => {
                 if(err) throw err;
 
-                db.none('INSERT INTO korisnik(ime, prezime, datumrod, korisnickoime, lozinka, mail, sifvrstakorisnik) VALUES(${ime}, ${prezime}, ${datumRod}, ${korisnickoIme}, ${lozinka}, ${mail}, 1)', {
+                db.none('INSERT INTO korisnik(ime, prezime, datumrod, korisnickoime, lozinka, mail, sifvrstakorisnik, datumvrijemeregistracija) VALUES(${ime}, ${prezime}, ${datumRod}, ${korisnickoIme}, ${lozinka}, ${mail}, 1, ${vrijeme})', {
                     ime: userData.ime,
                     prezime: userData.prezime,
                     datumRod: userData.datumRod,
                     korisnickoIme: userData.korisnickoIme,
                     lozinka: hash,
-                    mail: userData.mail
+                    mail: userData.mail,
+                    vrijeme: userData.vrijeme
                 });
 
                 var sifkorisnik;

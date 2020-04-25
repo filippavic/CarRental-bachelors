@@ -140,6 +140,9 @@ export default function Start() {
         }
       }
 
+      var vrijemeRezervacije = moment().format();
+      var vrijemeRezervacijeFormatted = moment(vrijemeRezervacije).format("DD.MM.YYYY. HH:mm:ss");
+
       let reservationData = {
         sifkorisnik: userInfo.sifkorisnik,
         sifvozilo: values.sifvozilo,
@@ -147,10 +150,11 @@ export default function Start() {
         datumVrijemeDo: options.datumVrijemeDo,
         sifLokPrikupljanja: options.sifLokPrikupljanja,
         sifLokVracanja: options.sifLokVracanja,
-        iznosnajma: values.iznosnajma
+        iznosnajma: values.iznosnajma,
+        vrijemeRezervacije: vrijemeRezervacije
       };
 
-      setReservationInfo({registration: values.registracija, puninaziv: values.puninaziv, urlslika: values.urlslika, iznos: values.iznosnajma, time: moment().format('DD.MM.YYYY. HH:mm:ss')});
+      setReservationInfo({registration: values.registracija, puninaziv: values.puninaziv, urlslika: values.urlslika, iznos: values.iznosnajma, time: vrijemeRezervacijeFormatted});
 
       const body = JSON.stringify(reservationData);
 
@@ -181,7 +185,7 @@ export default function Start() {
         {modalOpen ? (<ConfirmModal success={resSuccess} reservationInfo={reservationInfo} userInfo={userInfo} sifnajam={sifNajam}
         handleClose={() => handleCloseModal()}/>) : null}
         <div className="main-content">
-          {didMount ? (<AuthNavbar />) : null}
+          {didMount ? (<AuthNavbar userInfo={userInfo}/>) : null}
 
           {/* Header stranice */}
           <div className="header bg-gradient-info py-7 py-lg-8">     

@@ -75,7 +75,7 @@ class PastRentHeader extends React.Component {
                         </div>
                         <Col className="col-auto">
                           <div className="icon icon-shape bg-warning text-white rounded-circle shadow">
-                            <i className="fas fa-dollar-sign" />
+                            <i className="fas fa-euro-sign" />
                           </div>
                         </Col>
                       </Row>

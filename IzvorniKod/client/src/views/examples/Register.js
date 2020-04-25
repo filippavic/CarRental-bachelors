@@ -97,7 +97,8 @@ class Register extends React.Component {
     //slanje podataka za registraciju
     const { ime, prezime, mail, korisnickoIme, lozinka, lozinkaConfirm } = this.state;
 
-    const datumRod =  moment(this.state.datumRod).format("YYYY-MM-DD");
+    const datumRod = moment(this.state.datumRod).format("YYYY-MM-DD");
+    const vrijeme = moment().format();
 
     //user object
     const newUser = {
@@ -106,7 +107,8 @@ class Register extends React.Component {
       datumRod,
       mail,
       korisnickoIme,
-      lozinka
+      lozinka,
+      vrijeme
     };
 
     //provjera jesu li upisane identicne lozinke

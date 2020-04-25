@@ -64,7 +64,7 @@ export const loadUser = () => async (dispatch, getStore) => {
 
 
 //registracija korisnika
-export const register = ({ ime, prezime, datumRod, mail, korisnickoIme, lozinka }) => dispatch => {
+export const register = ({ ime, prezime, datumRod, mail, korisnickoIme, lozinka, vrijeme }) => dispatch => {
     //headers
     const config = {
         headers: {
@@ -72,7 +72,7 @@ export const register = ({ ime, prezime, datumRod, mail, korisnickoIme, lozinka 
         }
     }
 
-    const body = JSON.stringify({ ime, prezime, datumRod, mail, korisnickoIme, lozinka });
+    const body = JSON.stringify({ ime, prezime, datumRod, mail, korisnickoIme, lozinka, vrijeme });
 
     axios.post('/api/users/register', body, config)
     .then(res => dispatch({

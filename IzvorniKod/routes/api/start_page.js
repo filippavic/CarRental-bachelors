@@ -39,15 +39,16 @@ router.post("/reservation", async function(req, res, next) {
         siflokprikupljanja: req.body.sifLokPrikupljanja,
         siflokvracanja: req.body.sifLokVracanja,
         iznosnajma: req.body.iznosnajma,
+        vrijeme: req.body.vrijemeRezervacije,
         zavrsen: 'false'
     };
     
     //provjera podataka
-    if(!reservationData.sifkorisnik || !reservationData.sifvozilo || !reservationData.planiranidatumvrijemeod || !reservationData.planiranidatumvrijemedo || !reservationData.siflokprikupljanja || !reservationData.siflokvracanja || !reservationData.iznosnajma){
+    if(!reservationData.sifkorisnik || !reservationData.sifvozilo || !reservationData.planiranidatumvrijemeod || !reservationData.planiranidatumvrijemedo || !reservationData.siflokprikupljanja || !reservationData.siflokvracanja || !reservationData.iznosnajma || !reservationData.vrijeme){
         return res.status(400).json({msg: "Došlo je do pogreške, pokušajte ponovno."});
     }
 
-    db.one('INSERT INTO najam(sifkorisnik, sifvozilo, planiranidatumvrijemeod, planiranidatumvrijemedo, siflokprikupljanja, siflokvracanja, iznosnajma, zavrsen) VALUES(${sifkorisnik}, ${sifvozilo}, ${datumVrijemeOd}, ${datumVrijemeDo}, ${sifLokPrikupljanja}, ${sifLokVracanja}, ${iznosnajma}, ${zavrsen}) returning "sifnajam"', {
+    db.one('INSERT INTO najam(sifkorisnik, sifvozilo, planiranidatumvrijemeod, planiranidatumvrijemedo, siflokprikupljanja, siflokvracanja, iznosnajma, zavrsen, datumvrijemenajam) VALUES(${sifkorisnik}, ${sifvozilo}, ${datumVrijemeOd}, ${datumVrijemeDo}, ${sifLokPrikupljanja}, ${sifLokVracanja}, ${iznosnajma}, ${zavrsen}, ${vrijeme}) returning "sifnajam"', {
         sifkorisnik: reservationData.sifkorisnik,
         sifvozilo: reservationData.sifvozilo,
         datumVrijemeOd: reservationData.planiranidatumvrijemeod,
@@ -55,6 +56,7 @@ router.post("/reservation", async function(req, res, next) {
         sifLokPrikupljanja: reservationData.siflokprikupljanja,
         sifLokVracanja: reservationData.siflokvracanja,
         iznosnajma: reservationData.iznosnajma,
+        vrijeme: reservationData.vrijeme,
         zavrsen: reservationData.zavrsen
     }).then(data => {
         res.send(data);

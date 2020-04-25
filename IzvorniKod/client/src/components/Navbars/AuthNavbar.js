@@ -108,9 +108,18 @@ class AdminNavbar extends React.Component {
                   </NavItem>
                 )
                 }
-                {isAuthenticated ? (
+                {isAuthenticated && this.props.userInfo && this.props.userInfo.sifvrstakorisnik === 1 ? (
                   <NavItem>
                     <NavLink className="nav-link-icon" to="/user" tag={Link}>
+                      <i className="ni ni-app" />
+                      <span className="nav-link-inner--text">Upravljačka ploča</span>
+                    </NavLink>
+                  </NavItem>
+                ) : null
+                }
+                {isAuthenticated && this.props.userInfo && this.props.userInfo.sifvrstakorisnik === 2 ? (
+                  <NavItem>
+                    <NavLink className="nav-link-icon" to="/admin" tag={Link}>
                       <i className="ni ni-app" />
                       <span className="nav-link-inner--text">Upravljačka ploča</span>
                     </NavLink>

@@ -49,7 +49,7 @@ function App() {
                     <BrowserRouter>
                     <Switch>
                         <PrivateRoute path="/user" component={UserLayout} />
-                        <PrivateRoute path="/admin" render={props => <AdminLayout {...props} />} />
+                        <PrivateRoute path="/admin" component={AdminLayout} />
                         <Route path="/auth" render={props => <AuthLayout {...props} />} />
                         <Route path="/" render={props => <StartLayout {...props} />} />
                         {/*<Redirect from="/" to="/admin/index" />*/}
