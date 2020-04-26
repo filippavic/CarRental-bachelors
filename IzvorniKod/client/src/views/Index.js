@@ -47,6 +47,8 @@ import {
   chartExample2
 } from "../variables/charts.js";
 
+import ReactLoading from 'react-loading';
+
 import DashboardHeader from "../components/Headers/DashboardHeader.js";
 
 class Index extends React.Component {
@@ -56,7 +58,29 @@ class Index extends React.Component {
       activeNav: 1,
       chartExample1Data: "data1",
       reservationStats: [],
-      isResStatsFetching: false
+      isResStatsFetching: false,
+      mjeseci: ["Sij", "Velj", "Ožu", "Tra", "Svi", "Lip", "Srp", "Kol", "Ruj", "Lis", "Stu", "Pro"],
+      isPrihodFetching: false,
+      prihodData: {
+        labels: [],
+        datasets: [
+          {
+            label: "Prihod",
+            data: []
+          }
+        ]
+      },
+      isRezervacijeFetching: false,
+      rezervacijeData: {
+        labels: [],
+        datasets: [
+          {
+            label: "Rezervacije",
+            data: [],
+            maxBarThickness: 10
+          }
+        ]
+      }
     };
     if (window.Chart) {
       parseOptions(Chart, chartOptions());
@@ -64,21 +88,59 @@ class Index extends React.Component {
   }
 
   componentDidMount() {
+    //statistika
     this.setState({ reservationStats: this.state.reservationStats, isResStatsFetching: true });
     axios.get(`/api/admin_page/dashboardstats/`).then(res => {
       const resdata = res.data;
 			this.setState({ reservationStats: resdata, isResStatsFetching: false });
+    });
+    
+    //podaci za graf prihoda
+    this.setState({ prihodData: this.state.prihodData, isPrihodFetching: true });
+    axios.get(`/api/admin_page/revenuegraph/`).then(res => {
+      const data = res.data;
+      let mjeseci = [];
+      let prihodi = [];
+      data && data.map (entry => {
+        mjeseci.push(this.state.mjeseci[entry.mjesec-1]);
+        prihodi.push(entry.ukupno);
+      });
+      let prihodData = {
+        labels: mjeseci,
+        datasets: [
+          {
+            label: "Prihod",
+            data: prihodi
+          }
+        ]
+      };
+      this.setState({ prihodData: prihodData, isPrihodFetching: false });
+    });
+    
+    //podaci za graf rezervacija
+    this.setState({ rezervacijeData: this.state.rezervacijeData, isRezervacijeFetching: true });
+    axios.get(`/api/admin_page/reservationgraph/`).then(res => {
+      const data = res.data;
+      let mjeseci = [];
+      let rezervacije = [];
+      data && data.map (entry => {
+        mjeseci.push(this.state.mjeseci[entry.mjesec-1]);
+        rezervacije.push(entry.ukupno);
+      });
+      let rezervacijeData = {
+        labels: mjeseci,
+        datasets: [
+          {
+            label: "Rezervacije",
+            data: rezervacije,
+            maxBarThickness: 10
+          }
+        ]
+      };
+      this.setState({ rezervacijeData: rezervacijeData, isRezervacijeFetching: false });
 		});
   }
 
-  toggleNavs = (e, index) => {
-    e.preventDefault();
-    this.setState({
-      activeNav: index,
-      chartExample1Data:
-        this.state.chartExample1Data === "data1" ? "data2" : "data1"
-    });
-  };
 
   render() {
 
@@ -101,41 +163,16 @@ class Index extends React.Component {
                       <h2 className="text-white mb-0">Prihodi</h2>
                     </div>
                     <div className="col">
-                      <Nav className="justify-content-end" pills>
-                        <NavItem>
-                          <NavLink
-                            className={classnames("py-2 px-3", {
-                              active: this.state.activeNav === 1
-                            })}
-                            href="#pablo"
-                            onClick={e => this.toggleNavs(e, 1)}
-                          >
-                            <span className="d-none d-md-block">Month</span>
-                            <span className="d-md-none">M</span>
-                          </NavLink>
-                        </NavItem>
-                        <NavItem>
-                          <NavLink
-                            className={classnames("py-2 px-3", {
-                              active: this.state.activeNav === 2
-                            })}
-                            data-toggle="tab"
-                            href="#pablo"
-                            onClick={e => this.toggleNavs(e, 2)}
-                          >
-                            <span className="d-none d-md-block">Week</span>
-                            <span className="d-md-none">W</span>
-                          </NavLink>
-                        </NavItem>
-                      </Nav>
                     </div>
                   </Row>
                 </CardHeader>
                 <CardBody>
                   {/* Chart */}
+                  
                   <div className="chart">
+                    {this.state.isPrihodFetching ? (<ReactLoading type="bubbles" color="#8E8E93" margin={'auto'} height={'10%'} width={'10%'} />) : null}
                     <Line
-                      data={chartExample1[this.state.chartExample1Data]}
+                      data={this.state.prihodData}
                       options={chartExample1.options}
                       getDatasetAtEvent={e => console.log(e)}
                     />
@@ -158,8 +195,9 @@ class Index extends React.Component {
                 <CardBody>
                   {/* Chart */}
                   <div className="chart">
+                    {this.state.isRezervacijeFetching ? (<ReactLoading type="bubbles" color="#8E8E93" margin={'auto'} height={'10%'} width={'10%'} />) : null}
                     <Bar
-                      data={chartExample2.data}
+                      data={this.state.rezervacijeData}
                       options={chartExample2.options}
                     />
                   </div>

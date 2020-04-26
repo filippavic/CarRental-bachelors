@@ -17,4 +17,26 @@ router.get('/dashboardstats/', auth, (req, res) => {
     });
 });
 
+//dohvacanje podataka za graf prihoda
+router.get('/revenuegraph/', auth, (req, res) => {
+    res.setHeader("content-type", "application/json");
+    res.setHeader("accept", "application/json");
+    
+    db.any('SELECT EXTRACT (MONTH FROM datumvrijemedo) AS mjesec, EXTRACT(YEAR FROM datumvrijemedo) AS godina, SUM(iznosnajma) AS ukupno FROM najam WHERE zavrsen=TRUE GROUP BY mjesec, godina ORDER by godina, mjesec LIMIT 8',
+    []).then(data => {
+        res.send(data);
+    });
+});
+
+//dohvacanje podataka za graf rezervacija
+router.get('/reservationgraph/', auth, (req, res) => {
+    res.setHeader("content-type", "application/json");
+    res.setHeader("accept", "application/json");
+    
+    db.any('SELECT EXTRACT (MONTH FROM datumvrijemenajam) AS mjesec, EXTRACT(YEAR FROM datumvrijemenajam) AS godina, COUNT(sifnajam) AS ukupno FROM najam GROUP BY mjesec, godina ORDER by godina, mjesec LIMIT 6',
+    []).then(data => {
+        res.send(data);
+    });
+});
+
 module.exports = router;

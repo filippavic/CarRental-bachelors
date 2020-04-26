@@ -114,7 +114,7 @@ class DashboardHeader extends React.Component {
                         <span className={this.state.korisniciPostotakPlus ? 'text-success mr-2' : 'text-danger mr-2'}>
                           <i className={this.state.korisniciPostotakPlus ? 'fas fa-arrow-up' : 'fas fa-arrow-down'}/> {this.state.korisniciPostotak}%
                         </span>{" "}
-                        <span className="text-nowrap">od prošlog mjeseca</span>
+                        <span className="text-nowrap">nego prošli mjesec</span>
                       </p>
                     </CardBody>
                   </Card>
@@ -145,7 +145,7 @@ class DashboardHeader extends React.Component {
                         <span className={this.state.rezPostotakPlus ? 'text-success mr-2' : 'text-danger mr-2'}>
                           <i className={this.state.rezPostotakPlus ? 'fas fa-arrow-up' : 'fas fa-arrow-down'}/> {this.state.rezPostotak}%
                         </span>{" "}
-                        <span className="text-nowrap">Od prošlog tjedna</span>
+                        <span className="text-nowrap">nego prošli tjedan</span>
                       </p>
                     </CardBody>
                   </Card>
@@ -174,7 +174,7 @@ class DashboardHeader extends React.Component {
                         <span className={this.state.prihodPostotakPlus ? 'text-success mr-2' : 'text-danger mr-2'}>
                           <i className={this.state.prihodPostotakPlus ? 'fas fa-arrow-up' : 'fas fa-arrow-down'}/> {this.state.prihodPostotak}%
                         </span>{" "}
-                        <span className="text-nowrap">Od prošlog tjedna</span>
+                        <span className="text-nowrap">nego prošli tjedan</span>
                       </p>
                     </CardBody>
                   </Card>

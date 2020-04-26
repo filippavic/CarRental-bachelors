@@ -314,7 +314,7 @@ let chartExample1 = {
           ticks: {
             callback: function(value) {
               if (!(value % 10)) {
-                return "$" + value + "k";
+                return "" + value + " kn";
               }
             }
           }
@@ -332,7 +332,7 @@ let chartExample1 = {
             content += label;
           }
 
-          content += "$" + yLabel + "k";
+          content += " " + yLabel + " kn";
           return content;
         }
       }

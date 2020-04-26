@@ -17,6 +17,8 @@
 */
 import React from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 // reactstrap components
 import { Container } from "reactstrap";
 // core components
@@ -27,6 +29,11 @@ import Sidebar from "../components/Sidebar/Sidebar.js";
 import routes from "../adminRoutes.js";
 
 class Admin extends React.Component {
+
+  static propTypes = {
+    auth: PropTypes.object.isRequired
+  }
+
   componentDidUpdate(e) {
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
@@ -75,6 +82,7 @@ class Admin extends React.Component {
           <AdminNavbar
             {...this.props}
             brandText={this.getBrandText(this.props.location.pathname)}
+            userInfo={this.props.auth.user}
           />
           <Switch>
             {this.getRoutes(routes)}
@@ -88,4 +96,8 @@ class Admin extends React.Component {
   }
 }
 
-export default Admin;
+const mapStateToProps = state => ({
+  auth: state.auth
+});
+
+export default connect(mapStateToProps, {})(Admin);
