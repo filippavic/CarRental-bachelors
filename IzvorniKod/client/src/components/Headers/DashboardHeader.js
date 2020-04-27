@@ -161,7 +161,8 @@ class DashboardHeader extends React.Component {
                           >
                             Prihod
                           </CardTitle>
-                          {this.props.isResStatsFetching ? (<ReactLoading type="bubbles" color="#8E8E93" height={'20%'} width={'20%'} />) : (<span className="h2 font-weight-bold mb-0">{this.props.resStats.ukupnothis} kn</span>)}
+                          {this.props.isResStatsFetching ? (<ReactLoading type="bubbles" color="#8E8E93" height={'20%'} width={'20%'} />) : 
+                          (<span className="h2 font-weight-bold mb-0">{this.props.resStats.ukupnothis ? this.props.resStats.ukupnothis : "0"} kn</span>)}
                           
                         </div>
                         <Col className="col-auto">

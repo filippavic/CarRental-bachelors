@@ -81,7 +81,7 @@ class Povijest extends React.Component {
                       <th scope="col">Datum prikupljanja</th>
                       <th scope="col">Datum vraćanja</th>
                       <th scope="col">Lokacija prikupljanja</th>
-                      <th scope="col">Lokacija prikupljanja</th>
+                      <th scope="col">Lokacija vraćanja</th>
                       <th scope="col">Iznos</th>
                     </tr>
                   </thead>

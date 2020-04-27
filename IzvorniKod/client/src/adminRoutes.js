@@ -16,6 +16,7 @@
 
 */
 import Index from "./views/Index.js";
+import AdminRezervacije from "./views/AdminRezervacije.js";
 
 var adminRoutes = [
     {
@@ -23,6 +24,13 @@ var adminRoutes = [
         name: "Informacije",
         icon: "ni ni-tv-2 text-primary",
         component: Index,
+        layout: "/admin"
+      },
+      {
+        path: "/najmovi",
+        name: "Najmovi",
+        icon: "ni ni-tag",
+        component: AdminRezervacije,
         layout: "/admin"
       },
 ];
