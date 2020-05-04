@@ -26,11 +26,6 @@ import {
   CardHeader,
   Table,
   Container,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownItem,
-  DropdownMenu,
-  Alert,
   UncontrolledAlert
 } from "reactstrap";
 // react component for creating dynamic tables

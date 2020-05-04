@@ -205,4 +205,61 @@ router.post("/changelocationstatus", auth, (req, res) => {
     });
 });
 
+//popis drzava
+router.get("/countries", auth, (req, res) => {
+    res.setHeader("content-type", "application/json");
+    res.setHeader("accept", "application/json");
+
+    db.any('SELECT koddrzava AS value, nazivdrzava AS label FROM drzava').then(data => {
+        res.send(data);
+    })
+    .catch(error => {
+        console.log(error);
+    });
+});
+
+//dodavanje nove podruznice
+router.post("/newlocation", auth, (req, res) => {
+    const locationData = {
+        adresa: req.body.adresa,
+        kucnibroj: req.body.kucnibroj,
+        postbroj: req.body.postbroj,
+        nazivmjesto: req.body.nazivmjesto,
+        koddrzava: req.body.koddrzava
+    };
+    
+    //provjera podataka
+    if(!locationData.adresa || !locationData.kucnibroj || !locationData.postbroj || !locationData.nazivmjesto || !locationData.koddrzava){
+        return res.status(400).json({msg: "Došlo je do pogreške, pokušajte ponovno."});
+    }
+
+    db.task(t => {
+        return t.any('SELECT nazivmjesto FROM mjesto WHERE pbrmjesto=${postbroj}', {
+            postbroj: locationData.postbroj
+        }).then(data => {
+                if(data.length === 0) {
+                    return t.none('INSERT INTO mjesto (pbrmjesto, nazivmjesto, koddrzava) VALUES (${postbroj}, ${nazivmjesto}, ${koddrzava})', {
+                        postbroj: locationData.postbroj,
+                        nazivmjesto: locationData.nazivmjesto,
+                        koddrzava: locationData.koddrzava
+                    });
+                }
+                return [];
+        }).then(data => {
+            return t.none('INSERT INTO lokacija (ulica, kucnibroj, pbrmjesto) VALUES (${adresa}, ${kucnibroj}, ${postbroj})', {
+                adresa: locationData.adresa,
+                kucnibroj: locationData.kucnibroj,
+                postbroj: locationData.postbroj
+            });
+        });
+        })
+        .then(events => {
+            return res.status(200).json({msg: "Uspješno"});
+        })
+        .catch(error => {
+            res.status(400).json({ msg: 'Dogodila se pogreška'});
+        });
+});
+
+
 module.exports = router;

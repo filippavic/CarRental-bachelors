@@ -26,11 +26,9 @@ import {
   CardHeader,
   Table,
   Container,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownItem,
-  DropdownMenu,
-  Alert,
+  Row,
+  Col,
+  Button,
   UncontrolledAlert
 } from "reactstrap";
 // react component for creating dynamic tables
@@ -40,6 +38,7 @@ import AdminLocationHeader from "../components/Headers/AdminLocationHeader.js";
 import AdminLocationTableRow from "../components/AdminPage/AdminLocationTableRow";
 
 import ReactLoading from 'react-loading';
+import LocationModal from "../components/AdminPage/LocationModal.js";
 
 class AdminLokacije extends React.Component {
   constructor(props) {
@@ -51,7 +50,8 @@ class AdminLokacije extends React.Component {
       isNotActiveFetching: false,
       msgFail: null,
       msgSuccess: null,
-      isSortedAscending: null
+      isSortedAscending: null,
+      isModalOpen: false
     };
   }
 
@@ -131,15 +131,64 @@ class AdminLokacije extends React.Component {
       })
       .catch(err => {
           this.setState({msgFail: "Došlo je do pogreške, pokušajte ponovno"})
-      });
- 
-    
+      });  
   }
+
+  //otvaranje/zatvaranje prozora
+  toggleModal = (e) => {
+    e.preventDefault();
+    this.setState({isModalOpen: !this.state.isModalOpen});
+  };
+
+  //dodavanje nove podruznice
+  addNewLocation = (newLocation) => {
+    //headers
+    const config = {
+      headers: {
+          'Content-Type': 'application/json'
+      }
+    }
+
+    const body = JSON.stringify(newLocation);
+
+    axios.post('/api/admin_page/newlocation', body, config)
+    .then(res => {
+      if(res.status === 200){
+        this.setState({msgSuccess: "Lokacija uspješno dodana"});
+
+        //ponovno dohvacanje podruznica
+        this.setState({ locations: this.state.locations, isFetching: true });
+        axios.get(`/api/admin_page/locations/`).then(res => {
+          const locations = res.data;
+          let sortedLocations = locations.sort((a, b) => (a.siflokacija - b.siflokacija));
+          this.setState({ locations: sortedLocations, isFetching: false});
+        });
+        this.setState({ isSortedAscending: true });
+
+        this.setState({ notactive: this.state.notactive, isNotActiveFetching: true });
+        axios.get(`/api/admin_page/notactivelocations/`).then(res => {
+          const locations = res.data;
+          let sortedLocations = locations.sort((a, b) => (a.siflokacija - b.siflokacija));
+          this.setState({ notactive: sortedLocations, isNotActiveFetching: false});
+        });
+
+      }
+      else{
+        throw Error;
+      }       
+    })
+    .catch(err => {
+        this.setState({msgFail: "Došlo je do pogreške, pokušajte ponovno"})
+    });
+
+    this.setState({isModalOpen: false});
+  };
 
 
   render() {
     return (
       <>
+        <LocationModal isModalOpen={this.state.isModalOpen} toggleModal={this.toggleModal} addNewLocation={(newLocation) => this.addNewLocation(newLocation)}/>
         <AdminLocationHeader isFetching={this.state.isFetching && this.state.isNotActiveFetching} brlokacija={this.state.locations.length + this.state.notactive.length} braktivnih={this.state.locations.length}/>
         {/* Page content */}
         <Container className="mt--7" fluid>
@@ -148,8 +197,17 @@ class AdminLokacije extends React.Component {
           {/* Table - aktivne */}
           <div className="col">
             <Card className="shadow">
-                <CardHeader className="d-flex justify-content-between border-0">
-                  <h3 className="mb-0">Aktivne podružnice</h3>
+                <CardHeader className="border-0">
+                  <Row className="align-items-center">
+                        <Col xs="8">
+                        <h3 className="mb-0">Aktivne podružnice</h3>
+                        </Col>
+                        <Col className="text-right" xs="4">
+                          <Button color="primary" onClick={e => this.toggleModal(e)} size="sm">
+                          Nova podružnica
+                          </Button>
+                        </Col>
+                    </Row>             
                 </CardHeader>
                 <Table className="align-items-center table-flush" responsive>
                   <thead className="thead-light">
