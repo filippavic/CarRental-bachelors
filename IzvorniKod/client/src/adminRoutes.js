@@ -17,12 +17,13 @@
 */
 import Index from "./views/Index.js";
 import AdminRezervacije from "./views/AdminRezervacije.js";
+import AdminLokacije from "./views/AdminLokacije.js";
 
 var adminRoutes = [
     {
         path: "/index",
         name: "Informacije",
-        icon: "ni ni-tv-2 text-primary",
+        icon: "ni ni-tv-2",
         component: Index,
         layout: "/admin"
       },
@@ -31,6 +32,13 @@ var adminRoutes = [
         name: "Najmovi",
         icon: "ni ni-tag",
         component: AdminRezervacije,
+        layout: "/admin"
+      },
+      {
+        path: "/podruznice",
+        name: "Podružnice",
+        icon: "ni ni-square-pin",
+        component: AdminLokacije,
         layout: "/admin"
       },
 ];

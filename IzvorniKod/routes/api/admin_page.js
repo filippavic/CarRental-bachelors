@@ -124,4 +124,85 @@ router.post("/finish", auth, (req, res) => {
         });
 });
 
+
+//popis aktivnih podruznica
+router.get("/locations", auth, (req, res) => {
+    res.setHeader("content-type", "application/json");
+    res.setHeader("accept", "application/json");
+    db.any('SELECT siflokacija, ulica, kucnibroj, pbrmjesto, nazivmjesto, nazivdrzava FROM lokacija NATURAL JOIN mjesto NATURAL JOIN drzava WHERE aktivna=TRUE').then(data => {
+        res.send(data);
+    })
+    .catch(error => {
+        console.log(error);
+    });
+});
+
+//popis neaktivnih podruznica
+router.get("/notactivelocations", auth, (req, res) => {
+    res.setHeader("content-type", "application/json");
+    res.setHeader("accept", "application/json");
+    db.any('SELECT siflokacija, ulica, kucnibroj, pbrmjesto, nazivmjesto, nazivdrzava FROM lokacija NATURAL JOIN mjesto NATURAL JOIN drzava WHERE aktivna=FALSE').then(data => {
+        res.send(data);
+    })
+    .catch(error => {
+        console.log(error);
+    });
+});
+
+
+//zatvaranje lokacije
+router.post("/closelocation", auth, (req, res) => {
+    const siflokacija = req.body.siflokacija;
+
+    //provjera podataka
+    if(!siflokacija){
+        return res.status(400).json({msg: "Došlo je do pogreške, pokušajte ponovno."});
+    }
+
+    db.none('UPDATE lokacija SET aktivna=FALSE WHERE siflokacija=${siflokacija}', {
+        siflokacija: siflokacija
+    }).catch(error => {
+        res.status(400).json({ msg: 'Dogodila se pogreška'});
+    });
+});
+
+//otvaranje lokacije
+router.post("/openlocation", auth, (req, res) => {
+    const siflokacija = req.body.siflokacija;
+
+    //provjera podataka
+    if(!siflokacija){
+        return res.status(400).json({msg: "Došlo je do pogreške, pokušajte ponovno."});
+    }
+
+    db.none('UPDATE lokacija SET aktivna=TRUE WHERE siflokacija=${siflokacija}', {
+        siflokacija: siflokacija
+    }).catch(error => {
+        res.status(400).json({ msg: 'Dogodila se pogreška'});
+    });
+});
+
+//otvaranje/zatvaranje lokacije
+router.post("/changelocationstatus", auth, (req, res) => {
+    const locationData = {
+        siflokacija: req.body.siflokacija,
+        status: req.body.status
+    };
+
+    //provjera podataka
+    if(!locationData.siflokacija){
+        return res.status(400).json({msg: "Došlo je do pogreške, pokušajte ponovno."});
+    }
+
+    db.one('UPDATE lokacija SET aktivna=${status} WHERE siflokacija=${siflokacija} returning "siflokacija"', {
+        siflokacija: locationData.siflokacija,
+        status: locationData.status
+    }).then(data => {
+        return res.status(200).json({msg: "Promijenjeno"});
+    })
+    .catch(error => {
+        res.status(400).json({ msg: 'Dogodila se pogreška'});
+    });
+});
+
 module.exports = router;
