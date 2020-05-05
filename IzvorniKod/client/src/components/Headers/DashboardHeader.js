@@ -37,20 +37,23 @@ class DashboardHeader extends React.Component {
 
     componentWillReceiveProps(props) {
         if(!props.isResStatsFetching && props.resStats && props.resStats.length !== 0){
-            if(props.resStats.brnajmovalast === 0){
-                this.setState({ rezPostotak: "-" });
+
+            if(props.resStats.brnajmovalast == 0){
+                this.setState({ rezPostotak: "- " });
             }
             else{
                 this.setState({ rezPostotak: (Math.abs((props.resStats.brnajmovathis/props.resStats.brnajmovalast)-1))*100 });
             }
-            if(props.resStats.ukupnolast === 0){
-                this.setState({ prihodPostotak: "-" });
+
+            if(props.resStats.ukupnolast == 0){
+                this.setState({ prihodPostotak: "- " });
             }
             else{
                 this.setState({ prihodPostotak: (Math.abs((props.resStats.ukupnothis/props.resStats.ukupnolast)-1)).toFixed(4)*100 });
             }
-            if(props.resStats.korisnicilast === 0){
-                this.setState({ korisniciPostotak: "-" });
+            
+            if(props.resStats.korisnicilast == 0){
+                this.setState({ korisniciPostotak: "- " });
             }
             else{
                 this.setState({ korisniciPostotak: (Math.abs((props.resStats.korisnicithis/props.resStats.korisnicilast)-1)).toFixed(4)*100 });

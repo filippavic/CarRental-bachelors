@@ -49,6 +49,11 @@ export class AdminRentTableRow extends Component {
     this.props.setFinished(finishValues);
   }
 
+  openDetails = (e) => {
+    e.preventDefault();
+    this.props.openDetails(this.props.rent.sifnajam);
+  }
+
     render() {
         return (
             <>
@@ -91,8 +96,7 @@ export class AdminRentTableRow extends Component {
                       </DropdownItem>
                       <DropdownItem
                         href=""
-                        onClick={e => e.preventDefault()}
-                        disabled
+                        onClick={this.openDetails}
                       >
                         Detalji
                       </DropdownItem>

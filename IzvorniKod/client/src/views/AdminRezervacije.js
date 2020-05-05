@@ -33,6 +33,7 @@ import {
 // core components
 import AdminRentHeader from "../components/Headers/AdminRentHeader.js";
 import AdminRentTableRow from "../components/AdminPage/AdminRentTableRow";
+import RentModal from "../components/AdminPage/RentModal.js";
 
 import ReactLoading from 'react-loading';
 var moment = require('moment');
@@ -45,7 +46,9 @@ class AdminRezervacije extends React.Component {
       isFetching: false,
       msgFail: null,
       msgSuccess: null,
-      isSortedAscending: null
+      isSortedAscending: null,
+      isModalOpen: false,
+      sifNajam: null
     };
     this.locations = [];
   }
@@ -160,10 +163,24 @@ class AdminRezervacije extends React.Component {
       });
   }
 
+  //otvaranje/zatvaranje prozora
+  toggleModal = (e) => {
+    e.preventDefault();
+    this.setState({isModalOpen: !this.state.isModalOpen});
+  };
+
+  //detalji o najmu
+  openDetails = (value) => {
+    this.setState({sifNajam: value}, function () {this.setState({isModalOpen: true})})
+  }
+
 
   render() {
     return (
       <>
+        {this.state.isModalOpen ? (
+          <RentModal isModalOpen={this.state.isModalOpen} sifNajam={this.state.sifNajam} toggleModal={this.toggleModal}/>
+        ) : null}
         <AdminRentHeader isFetching={this.state.isFetching} brnajmova={this.state.rents.length}/>
         {/* Page content */}
         <Container className="mt--7" fluid>
@@ -207,7 +224,7 @@ class AdminRezervacije extends React.Component {
                   <tbody>
                   {this.state.isFetching ? (<><ReactLoading type="bubbles" color="#8E8E93" height={'20%'} width={'20%'} /></>) : null}
                   {this.state.rents && this.state.rents.map(rent => (
-                    <AdminRentTableRow key={rent.sifnajam} rent={rent} setPickedUp={(values) => this.setPickedUp(values)} setFinished={(values) => this.setFinished(values)}/>))}
+                    <AdminRentTableRow key={rent.sifnajam} rent={rent} setPickedUp={(values) => this.setPickedUp(values)} setFinished={(values) => this.setFinished(values)} openDetails={(value) => this.openDetails(value)}/>))}
                   </tbody>
                 </Table>
             </Card>
