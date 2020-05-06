@@ -270,9 +270,54 @@ router.get('/rentinfo/:sifnajam', auth, (req, res) => {
     db.one('SELECT ime, prezime, to_char(datumrod, \'DD.MM.YYYY.\') AS datumrod, mail, to_char(datumvrijemeregistracija, \'DD.MM.YYYY.\') AS korisnikod, nazivproizvodac, nazivmodel, to_char(planiranidatumvrijemeod, \'DD.MM.YYYY. HH24:MI\') AS planiranidatumvrijemeod, to_char(planiranidatumvrijemedo, \'DD.MM.YYYY. HH24:MI\') AS planiranidatumvrijemedo, to_char(datumvrijemeod, \'DD.MM.YYYY. HH24:MI\') AS datumvrijemeod, to_char(datumvrijemedo, \'DD.MM.YYYY. HH24:MI\') AS datumvrijemedo, l1.ulica AS ulicaP, l1.kucnibroj AS kucniP, l1.pbrmjesto AS pbrP, m1.nazivmjesto AS mjestoP, l2.ulica AS ulicaD, l2.kucnibroj AS kucniD, l2.pbrmjesto AS pbrD, m2.nazivmjesto AS mjestoD, registratskaoznaka, iznosnajma FROM najam NATURAL JOIN korisnik NATURAL JOIN vozilo NATURAL JOIN model NATURAL JOIN proizvodac JOIN lokacija l1 ON l1.siflokacija = siflokprikupljanja JOIN mjesto m1 ON l1.pbrmjesto = m1.pbrmjesto JOIN lokacija l2 ON l2.siflokacija = siflokvracanja JOIN mjesto m2 ON l2.pbrmjesto = m2.pbrmjesto WHERE sifnajam=$1',
     [req.params.sifnajam]).then(data => {
         res.send(data);
-    });
-    
+    });  
 });
 
+//popis vozila u vlasnistvu
+router.get("/vehicles", auth, (req, res) => {
+    res.setHeader("content-type", "application/json");
+    res.setHeader("accept", "application/json");
+    db.any('SELECT sifvozilo, registratskaoznaka, nazivproizvodac, nazivmodel, nazivvrstamodel FROM vozilo NATURAL JOIN model NATURAL JOIN vrsta_model NATURAL JOIN proizvodac').then(data => {
+        res.send(data);
+    })
+    .catch(error => {
+        console.log(error);
+    });
+});
+
+//dohvacanje detalja o vozilu
+router.get('/vehicleinfo/:sifvozilo', auth, (req, res) => {
+    res.setHeader("content-type", "application/json");
+    res.setHeader("accept", "application/json");
+ 
+    db.one('SELECT vozilo.sifvozilo, registratskaoznaka, nazivproizvodac, nazivmodel, nazivvrstamodel, nazivvrstamotor, nazivvrstamjenjac, potrosnja, urlslika, to_char(lokacija_vozilo.datumvrijeme, \'DD.MM.YYYY. HH24:MI\') AS datumvrijeme, ulica, kucnibroj, nazivmjesto, lokacija_vozilo.sifstatus FROM najam RIGHT JOIN vozilo ON vozilo.sifvozilo = najam.sifvozilo JOIN lokacija_vozilo ON vozilo.sifvozilo = lokacija_vozilo.sifvozilo NATURAL JOIN model NATURAL JOIN proizvodac NATURAL JOIN vrsta_model NATURAL JOIN vrsta_mjenjac NATURAL JOIN vrsta_motor NATURAL JOIN cjenik NATURAL JOIN lokacija NATURAL JOIN mjesto NATURAL JOIN status WHERE vozilo.sifvozilo=$1 ORDER BY lokacija_vozilo.datumvrijeme DESC LIMIT 1',
+    [req.params.sifvozilo]).then(data => {
+        res.send(data);
+    });  
+});
+
+//promjena registracije
+router.post("/changeregistration", auth, (req, res) => {
+    const registrationData = {
+        sifvozilo: req.body.sifvozilo,
+        registracija: req.body.registracija
+    };
+
+    //provjera podataka
+    if(!registrationData.sifvozilo || !registrationData.registracija){
+        return res.status(400).json({msg: "Došlo je do pogreške, pokušajte ponovno"});
+    }
+
+    db.none('UPDATE vozilo SET registratskaoznaka=${registracija} WHERE sifvozilo=${sifvozilo}', {
+        registracija: registrationData.registracija,
+        sifvozilo: registrationData.sifvozilo
+    })
+    .then(data => {
+        return res.status(200).json({msg: "Uspješno"});
+    })
+    .catch(error => {
+        return res.status(400).json({msg: 'Registracija već postoji'});
+    });
+});
 
 module.exports = router;

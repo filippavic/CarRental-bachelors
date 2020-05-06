@@ -1,4 +1,4 @@
-//Detalji o najmu
+//Detaljne informacije o vozilu
 
 import React from 'react'
 import axios from 'axios';
@@ -12,14 +12,16 @@ import {
     Modal,
     Row,
     Col,
-    Collapse
+    Collapse,
+    Button,
+    Input,
+    Alert
   } from "reactstrap";
 
 
 import ReactLoading from 'react-loading';
-var moment = require('moment');
 
-class RentModal extends React.Component{
+class VehicleDetailsModal extends React.Component{
 
     constructor(props) {
 		super(props);
@@ -27,31 +29,29 @@ class RentModal extends React.Component{
             information: [],
             isFetching: false,
             openedCollapses: [],
-            late: false,
-            status : ''
+            prikupljeno: false,
+            status : '',
+            registracija: '',
+            editMode: false,
+            msg: null
         };
         this.options = [];
     }
 
 
-    //ucitavanje detalja o najmu
+    //ucitavanje detalja o vozilu
     componentDidMount(){
-        this.setState({isFetching: true})
-        axios.get(`/api/admin_page/rentinfo/${this.props.sifNajam}`).then(res => {
+        this.setState({isFetching: true});
+        axios.get(`/api/admin_page/vehicleinfo/${this.props.sifVozilo}`).then(res => {
             const data = res.data;
-            var now = moment();
-            var planirano = moment(data.planiranidatumvrijemedo, 'DD.MM.YYYY. HH:mm');
 
-            if(!data.datumvrijemedo && now.isAfter(planirano)){
-                this.setState({late: true, status: 'Kasni'});
-            }
-            else if (!data.datumvrijemedo && data.datumvrijemeod){
-                this.setState({late: false, status: 'Prikupljeno'});
+            if(data.sifstatus == 1){
+                this.setState({prikupljeno: true, status: 'Iznajmljeno'});
             }
             else{
-                this.setState({late: false, status: 'Nije prikupljeno'});
+                this.setState({prikupljeno: false, status: 'U podružnici'});
             }
-            this.setState({ information: data, isFetching: false });
+            this.setState({ information: data, registracija: data.registratskaoznaka, isFetching: false });
         });
     }
 
@@ -68,6 +68,49 @@ class RentModal extends React.Component{
         }
       };
 
+    onChange = e => {
+        this.setState({ [e.target.name]: e.target.value});
+    };  
+
+    startEditMode = e => {
+        e.preventDefault();
+        this.setState({editMode: true});
+    };
+
+    finishEdit = e => {
+        e.preventDefault();
+        if(!this.state.registracija){
+            this.setState({msg: 'Ispunite polje s registracijom'});
+        }
+        else{
+            this.setState({msg: null});
+            //headers
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }
+
+            let registrationData = {
+                sifvozilo: this.state.information.sifvozilo,
+                registracija: this.state.registracija
+            }
+        
+            const body = JSON.stringify(registrationData);
+        
+            axios.post('/api/admin_page/changeregistration', body, config)
+            .then(res => {
+                if(res.status === 200){
+                    this.setState({editMode: false});
+                }    
+            })
+            .catch(err => {
+                this.setState({msg: "Registracija već postoji"})
+            });
+
+        }
+    };
+
  
     render() {
         return (
@@ -82,9 +125,18 @@ class RentModal extends React.Component{
                     <CardHeader className="bg-white border-0">
                     <Row className="align-items-center">
                         <Col xs="8">
-                        <h3 className="mb-0">Detalji najma br. {this.props.sifNajam}</h3>
+                        <h3 className="mb-0">Detalji o vozilu {this.state.information.registratskaoznaka}</h3>
                         </Col>
                         <Col className="text-right" xs="4">
+                        {this.state.editMode ? (
+                            <Button color="primary" onClick={e => this.finishEdit(e)} size="sm">
+                            Spremi
+                            </Button>
+                        ) : (
+                            <Button color="primary" onClick={e => this.startEditMode(e)} size="sm" >
+                            Uredi
+                            </Button>
+                        )}
                         <button
                             aria-label="Close"
                             className="close"
@@ -98,17 +150,21 @@ class RentModal extends React.Component{
                     </Row>
                     </CardHeader>
                   <CardBody>
+                    { this.state.msg ? (<Alert color="danger">{this.state.msg}</Alert>) : null }
                     <Form role="form">
                     <h6 className="heading-small text-muted mb-4">
                         Osnovno
                     </h6>
                     <div className="pl-lg-4">
                         <Row>
-                            <Col lg="5">
+                            <Col lg="3">
+                                <img className="car-img" draggable="false" alt={this.state.information.nazivmodel} src={this.state.information.urlslika}/>
+                            </Col>
+                            <Col lg="6">
                                 <label
                                 className="form-control-label"
                                 >
-                                Vozilo
+                                Model
                                 </label>
                                 {this.state.isFetching ? (
                                     <ReactLoading type="bubbles" color="#8E8E93" height={'10%'} width={'10%'} />
@@ -123,19 +179,19 @@ class RentModal extends React.Component{
                                 </label>
                                 {this.state.isFetching ? (
                                     <ReactLoading type="bubbles" color="#8E8E93" height={'10%'} width={'10%'} />
-                                ) : 
-                                (<h2>{this.state.information.registratskaoznaka}</h2>)}
-                            </Col>
-                            <Col lg="4">
-                                <label
-                                className="form-control-label"
-                                >
-                                Status
-                                </label>
-                                {this.state.isFetching ? (
-                                    <ReactLoading type="bubbles" color="#8E8E93" height={'10%'} width={'10%'} />
-                                ) : 
-                                (<h2 style={this.state.late ? {color: "#ff6961"} : {}}>{this.state.status}</h2>)}
+                                ) : null}
+                                {!this.state.isFetching && this.state.editMode ? (
+                                    <Input
+                                    className="form-control-alternative"
+                                    defaultValue={this.state.registracija}
+                                    id="input-first-name"
+                                    type="text"
+                                    name="registracija"
+                                    onChange={this.onChange}
+                                    />
+                                ) : (
+                                    <h2>{this.state.registracija}</h2>
+                                )}
                             </Col>
                         </Row>
                         </div>
@@ -149,7 +205,7 @@ class RentModal extends React.Component{
                                 "collapseOne"
                             )}
                             >
-                            <h5 className="mb-0">O korisniku...</h5>
+                            <h5 className="mb-0">Detalji modela...</h5>
                             </CardHeader>
                             <Collapse
                             role="tabpanel"
@@ -157,98 +213,98 @@ class RentModal extends React.Component{
                             >
                             <CardBody>
                                 <Row>
-                                <Col lg="4">
+                                <Col lg="3">
                                     <label
                                     className="form-control-label"
                                     >
-                                    Korisnik
+                                    Vrsta
                                     </label>
                                     {this.state.isFetching ? (
                                         <ReactLoading type="bubbles" color="#8E8E93" height={'10%'} width={'10%'} />
                                     ) : 
-                                    (<h3>{this.state.information.ime} {this.state.information.prezime}</h3>)}      
-                                </Col>
-                                <Col lg="5">
-                                    <label
-                                    className="form-control-label"
-                                    >
-                                    E-mail adresa
-                                    </label>
-                                    {this.state.isFetching ? (
-                                        <ReactLoading type="bubbles" color="#8E8E93" height={'10%'} width={'10%'} />
-                                    ) : 
-                                    (<h3>{this.state.information.mail}</h3>)}
+                                    (<h3>{this.state.information.nazivvrstamodel}</h3>)}      
                                 </Col>
                                 <Col lg="3">
                                     <label
                                     className="form-control-label"
                                     >
-                                    Datum rođenja
+                                    Motor
                                     </label>
                                     {this.state.isFetching ? (
                                         <ReactLoading type="bubbles" color="#8E8E93" height={'10%'} width={'10%'} />
                                     ) : 
-                                    (<h3>{this.state.information.datumrod}</h3>)}
+                                    (<h3>{this.state.information.nazivvrstamotor}</h3>)}
+                                </Col>
+                                <Col lg="3">
+                                    <label
+                                    className="form-control-label"
+                                    >
+                                    Mjenjač
+                                    </label>
+                                    {this.state.isFetching ? (
+                                        <ReactLoading type="bubbles" color="#8E8E93" height={'10%'} width={'10%'} />
+                                    ) : 
+                                    (<h3>{this.state.information.nazivvrstamjenjac}</h3>)}
+                                </Col>
+                                <Col lg="3">
+                                    <label
+                                    className="form-control-label"
+                                    >
+                                    Potrošnja
+                                    </label>
+                                    {this.state.isFetching ? (
+                                        <ReactLoading type="bubbles" color="#8E8E93" height={'10%'} width={'10%'} />
+                                    ) : 
+                                    (<h3>{this.state.information.potrosnja} l/100 km</h3>)}
                                 </Col>
                                 </Row>
                             </CardBody>
                             </Collapse>
                         </Card>
 
-                        <hr className="my-4" />
-                        <h6 className="heading-small text-muted mb-4">
-                        Vremena i lokacije
-                        </h6>
-                        <div className="pl-lg-4">
-                            <Row style={{marginBottom:"20px"}}>
-                                <Col lg="6">
+                        <Card className="card-plain" style={{marginTop: '10px'}}>
+                            <CardHeader
+                            role="tab"
+                            style={{cursor: 'pointer'}}
+                            onClick={() => this.collapsesToggle("collapseTwo")}
+                            aria-expanded={this.state.openedCollapses.includes(
+                                "collapseTwo"
+                            )}
+                            >
+                            <h5 className="mb-0">Status vozila...</h5>
+                            </CardHeader>
+                            <Collapse
+                            role="tabpanel"
+                            isOpen={this.state.openedCollapses.includes("collapseTwo")}
+                            >
+                            <CardBody>
+                                <Row>
+                                <Col lg="5">
                                     <label
                                     className="form-control-label"
                                     >
-                                    Planirano vrijeme prikupljanja
+                                    {this.state.prikupljeno ? ("Zadnja lokacija") : ("Lokacija")}
                                     </label>
                                     {this.state.isFetching ? (
                                         <ReactLoading type="bubbles" color="#8E8E93" height={'10%'} width={'10%'} />
                                     ) : 
-                                    (<h2>{this.state.information.planiranidatumvrijemeod}</h2>)}      
+                                    (<h3>{this.state.information.ulica} {this.state.information.kucnibroj}, {this.state.information.nazivmjesto}</h3>)}      
                                 </Col>
-                                <Col lg="6">
+                                <Col lg="3">
                                     <label
                                     className="form-control-label"
                                     >
-                                    Planirana lokacija prikupljanja
+                                    Status
                                     </label>
                                     {this.state.isFetching ? (
                                         <ReactLoading type="bubbles" color="#8E8E93" height={'10%'} width={'10%'} />
                                     ) : 
-                                    (<h2>{this.state.information.ulicap} {this.state.information.kucnip}, {this.state.information.mjestop}</h2>)}
+                                    (<h3>{this.state.status}</h3>)}
                                 </Col>
-                            </Row>
-                            <Row>
-                                <Col lg="6">
-                                    <label
-                                    className="form-control-label"
-                                    >
-                                    Planirano vrijeme vraćanja
-                                    </label>
-                                    {this.state.isFetching ? (
-                                        <ReactLoading type="bubbles" color="#8E8E93" height={'10%'} width={'10%'} />
-                                    ) : 
-                                    (<h2>{this.state.information.planiranidatumvrijemedo}</h2>)}      
-                                </Col>
-                                <Col lg="6">
-                                    <label
-                                    className="form-control-label"
-                                    >
-                                    Planirana lokacija vraćanja
-                                    </label>
-                                    {this.state.isFetching ? (
-                                        <ReactLoading type="bubbles" color="#8E8E93" height={'10%'} width={'10%'} />
-                                    ) : 
-                                    (<h2>{this.state.information.ulicad} {this.state.information.kucnid}, {this.state.information.mjestod}</h2>)}
-                                </Col>
-                            </Row>
-                            </div>
+                                </Row>
+                            </CardBody>
+                            </Collapse>
+                        </Card>
                       <div className="text-center">
                       </div>
                     </Form>
@@ -260,4 +316,4 @@ class RentModal extends React.Component{
     }
 }
 
-export default RentModal;
+export default VehicleDetailsModal;
