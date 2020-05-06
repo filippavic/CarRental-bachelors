@@ -107,7 +107,7 @@ class AdminLokacije extends React.Component {
     axios.post('/api/admin_page/changelocationstatus', body, config)
       .then(res => {
         if(res.status === 200){
-          this.setState({msgSuccess: "Status podružnice upješno promijenjen."});
+          this.setState({msgSuccess: "Status podružnice uspješno promijenjen"});
 
           //ponovno dohvacanje podruznica
           this.setState({ locations: this.state.locations, isFetching: true });
