@@ -27,13 +27,17 @@ import {
   CardHeader,
   Table,
   Container,
-  UncontrolledAlert
+  Alert,
+  Col,
+  Row,
+  Button
 } from "reactstrap";
 // react component for creating dynamic tables
 
 import AdminVehicleHeader from "../components/Headers/AdminVehicleHeader.js";
 import AdminVehicleTableRow from "../components/AdminPage/AdminVehicleTableRow";
 import VehicleDetailsModal from "../components/AdminPage/VehicleDetailsModal.js";
+import AddVehicleModal from "../components/AdminPage/AddVehicleModal.js";
 
 import ReactLoading from 'react-loading';
 
@@ -47,7 +51,8 @@ class AdminVozila extends React.Component {
               msgSuccess: null,
               isSortedAscending: null,
               isModalOpen: false,
-              sifVozilo: null
+              sifVozilo: null,
+              isAddModalOpen: false
       };
     }
 
@@ -73,7 +78,17 @@ class AdminVozila extends React.Component {
         this.setState({vehicles: sortedVehicles, isSortedAscending: !this.state.isSortedAscending});  
     }
 
-    //otvaranje/zatvaranje prozora
+    //zatvaranje fail alerta
+    onFailDismiss = (e) => {
+      this.setState({msgFail: null});
+    };
+
+    //zatvaranje success alerta
+    onSuccessDismiss = (e) => {
+      this.setState({msgSuccess: null});
+    };
+
+    //otvaranje/zatvaranje prozora s detaljima
     toggleModal = (e) => {
       e.preventDefault();
       this.setState({isModalOpen: !this.state.isModalOpen});
@@ -84,23 +99,76 @@ class AdminVozila extends React.Component {
       this.setState({sifVozilo: value}, function () {this.setState({isModalOpen: true})})
     }
 
+    //otvaranje/zatvaranje prozora za dodavanje vozila
+    toggleAddModal = (e) => {
+      e.preventDefault();
+      this.setState({isAddModalOpen: !this.state.isAddModalOpen});
+    };
+
+    //dodavanje novog vozila
+    addNewVehicle = (newVehicle) => {
+      //headers
+      const config = {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+      }
+
+      const body = JSON.stringify(newVehicle);
+
+      axios.post('/api/admin_page/newvehicle', body, config)
+      .then(res => {
+        if(res.status === 200){
+          this.setState({msgSuccess: "Vozilo uspješno dodano"});
+
+          //ponovno dohvacanje vozila
+          this.setState({ vehicles: this.state.vehicles, isFetching: true });
+          axios.get(`/api/admin_page/vehicles/`).then(res => {
+              const vehicles = res.data;
+              let sortedVehicles = orderBy(vehicles, 'sifvozilo', 'asc');
+            this.setState({ vehicles: sortedVehicles, isSortedAscending: true, isFetching: false});
+          });
+        }
+        else{
+          throw Error;
+        }       
+      })
+      .catch(err => {
+          this.setState({msgFail: "Registracija već postoji"})
+      });
+
+      this.setState({isAddModalOpen: false});
+    };
+
 
   render() {
     return (
       <>
+        {this.state.isAddModalOpen ? (
+          <AddVehicleModal isModalOpen={this.state.isAddModalOpen} toggleModal={this.toggleAddModal} addNewVehicle={(newVehicle) => this.addNewVehicle(newVehicle)}/>
+        ) : null}  
         {this.state.isModalOpen ? (
           <VehicleDetailsModal sifVozilo={this.state.sifVozilo} isModalOpen={this.state.isModalOpen} toggleModal={this.toggleModal}/>
         ) : null}
         <AdminVehicleHeader brvozila={this.state.vehicles.length}/>
         {/* Page content */}
         <Container className="mt--7" fluid>
-          { this.state.msgFail ? (<UncontrolledAlert color="danger">{this.state.msgFail}</UncontrolledAlert>) : null }
-          { this.state.msgSuccess ? (<UncontrolledAlert color="success">{this.state.msgSuccess}</UncontrolledAlert>) : null }
+          <Alert color="danger" isOpen={this.state.msgFail} toggle={this.onFailDismiss}>{this.state.msgFail}</Alert>
+          <Alert color="success" isOpen={this.state.msgSuccess} toggle={this.onSuccessDismiss}>{this.state.msgSuccess}</Alert>
           {/* Table */}
           <div className="col">
             <Card className="shadow">
-                <CardHeader className="d-flex justify-content-between border-0">
-                  <h3 className="mb-0">Vozila u vlasništvu</h3>
+                <CardHeader className="border-0">
+                  <Row className="align-items-center">
+                        <Col xs="8">
+                        <h3 className="mb-0">Vozila u vlasništvu</h3>
+                        </Col>
+                        <Col className="text-right" xs="4">
+                          <Button color="primary" onClick={e => this.toggleAddModal(e)} size="sm">
+                          Novo vozilo
+                          </Button>
+                        </Col>
+                    </Row>             
                 </CardHeader>
                 <Table className="align-items-center table-flush" responsive>
                   <thead className="thead-light">

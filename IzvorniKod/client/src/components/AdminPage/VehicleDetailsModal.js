@@ -35,7 +35,6 @@ class VehicleDetailsModal extends React.Component{
             editMode: false,
             msg: null
         };
-        this.options = [];
     }
 
 

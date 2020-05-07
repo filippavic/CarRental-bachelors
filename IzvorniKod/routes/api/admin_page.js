@@ -320,4 +320,85 @@ router.post("/changeregistration", auth, (req, res) => {
     });
 });
 
+//popis proizvodaca
+router.get("/manufacturers", auth, (req, res) => {
+    res.setHeader("content-type", "application/json");
+    res.setHeader("accept", "application/json");
+    db.any('SELECT sifproizvodac AS value, nazivproizvodac AS label FROM proizvodac').then(data => {
+        res.send(data);
+    })
+    .catch(error => {
+        console.log(error);
+    });
+});
+
+//popis aktivnih podruznica za odabir
+router.get("/locationselect", auth, (req, res) => {
+    res.setHeader("content-type", "application/json");
+    res.setHeader("accept", "application/json");
+    db.any('SELECT lokacija.siflokacija AS value, ulica || \' \' || kucnibroj || \', \' || nazivmjesto AS label FROM lokacija NATURAL JOIN mjesto').then(data => {
+        res.send(data);
+    })
+    .catch(error => {
+        console.log(error);
+    });
+});
+
+//dohvacanje modela odredenog proizvodaca
+router.get('/models/:sifproizvodac', auth, (req, res) => {
+    res.setHeader("content-type", "application/json");
+    res.setHeader("accept", "application/json");
+ 
+    db.any('SELECT sifmodel AS value, nazivmodel AS label FROM model WHERE sifproizvodac=$1',
+    [req.params.sifproizvodac]).then(data => {
+        res.send(data);
+    });  
+});
+
+//dodavanje novog vozila
+router.post("/newvehicle", auth, (req, res) => {
+    const vehicleData = {
+        sifmodel: req.body.sifmodel,
+        registracija: req.body.registracija,
+        siflokacija: req.body.siflokacija,
+        datumvrijeme: req.body.datumvrijeme
+    };
+    
+    //provjera podataka
+    if(!vehicleData.sifmodel || !vehicleData.registracija || !vehicleData.siflokacija || !vehicleData.datumvrijeme){
+        return res.status(400).json({msg: "Došlo je do pogreške, pokušajte ponovno."});
+    }
+
+    db.task(t => {
+        return t.any('SELECT sifvozilo FROM vozilo WHERE registratskaoznaka=${registracija}', {
+            registracija: vehicleData.registracija
+        }).then(data => {
+                if(data.length === 0) {
+                    return t.one('INSERT INTO vozilo (sifmodel, registratskaoznaka, kilometraza) VALUES (${sifmodel}, ${registracija}, 0) RETURNING "sifvozilo"', {
+                        sifmodel: vehicleData.sifmodel,
+                        registracija: vehicleData.registracija
+                    });
+                }
+                return [];
+        }).then(data => {
+            if(data.length !== 0){
+                return t.one('INSERT INTO lokacija_vozilo (sifvozilo, datumvrijeme, siflokacija, sifstatus) VALUES (${sifvozilo}, ${datumvrijeme}, ${siflokacija}, 2) RETURNING "siflokacijavozilo"', {
+                    sifvozilo: data.sifvozilo,
+                    datumvrijeme: vehicleData.datumvrijeme,
+                    siflokacija: vehicleData.siflokacija
+                });
+            }
+            return []; 
+        });
+        })
+        .then(events => {
+            if(events.length !== 0) res.status(200).json({msg: "Uspješno"});
+            else res.status(400).json({msg: "Registracija već postoji"});
+            return
+        })
+        .catch(error => {
+            res.status(400).json({ msg: 'Dogodila se pogreška'});
+        });
+});
+
 module.exports = router;
