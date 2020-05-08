@@ -19,7 +19,7 @@ import React from "react";
 import axios from 'axios';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import orderBy from 'lodash/orderBy'
+import orderBy from 'lodash/orderBy';
 
 // reactstrap components
 import {

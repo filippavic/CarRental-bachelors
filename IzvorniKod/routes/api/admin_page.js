@@ -401,4 +401,43 @@ router.post("/newvehicle", auth, (req, res) => {
         });
 });
 
+//trenutni cjenik
+router.get("/currentpricelist", auth, (req, res) => {
+    res.setHeader("content-type", "application/json");
+    res.setHeader("accept", "application/json");
+
+    db.any('SELECT sifcjenik, sifmodel, nazivproizvodac, nazivmodel, cijenapodanu, period FROM cjenik NATURAL JOIN model NATURAL JOIN proizvodac WHERE period = (SELECT period from cjenik WHERE period @> now()::date ORDER BY period DESC LIMIT 1)').then(data => {
+        res.send(data);
+    })
+    .catch(error => {
+        console.log(error);
+    });
+});
+
+//neaktivni periodi cjenika
+router.get("/notactiveperiods", auth, (req, res) => {
+    res.setHeader("content-type", "application/json");
+    res.setHeader("accept", "application/json");
+
+    db.any('SELECT DISTINCT period FROM cjenik WHERE NOT (period @> now()::date) ORDER BY period DESC').then(data => {
+        res.send(data);
+    })
+    .catch(error => {
+        console.log(error);
+    });
+});
+
+//cjenik za odredeni period
+router.get("/periodpricelist/:period", auth, (req, res) => {
+    res.setHeader("content-type", "application/json");
+    res.setHeader("accept", "application/json");
+
+    db.any('SELECT sifcjenik, sifmodel, nazivproizvodac, nazivmodel, cijenapodanu FROM cjenik NATURAL JOIN model NATURAL JOIN proizvodac WHERE period = $1', [req.params.period]).then(data => {
+        res.send(data);
+    })
+    .catch(error => {
+        console.log(error);
+    });
+});
+
 module.exports = router;

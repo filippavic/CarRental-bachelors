@@ -134,7 +134,6 @@ class AddVehicleModal extends React.Component{
             datumvrijeme
             };
         
-            console.log(newVehicle);
             this.props.addNewVehicle(newVehicle);
         }
 

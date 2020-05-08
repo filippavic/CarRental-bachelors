@@ -19,6 +19,7 @@ import Index from "./views/Index.js";
 import AdminRezervacije from "./views/AdminRezervacije.js";
 import AdminLokacije from "./views/AdminLokacije.js";
 import AdminVozila from "./views/AdminVozila.js";
+import AdminCjenik from "./views/AdminCjenik.js";
 
 var adminRoutes = [
     {
@@ -40,6 +41,13 @@ var adminRoutes = [
         name: "Vozila",
         icon: "fas fa-car",
         component: AdminVozila,
+        layout: "/admin"
+      },
+      {
+        path: "/cjenik",
+        name: "Cjenik",
+        icon: "ni ni-money-coins",
+        component: AdminCjenik,
         layout: "/admin"
       },
       {
