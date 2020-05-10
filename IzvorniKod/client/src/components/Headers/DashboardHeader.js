@@ -38,21 +38,21 @@ class DashboardHeader extends React.Component {
     componentWillReceiveProps(props) {
         if(!props.isResStatsFetching && props.resStats && props.resStats.length !== 0){
 
-            if(props.resStats.brnajmovalast == 0){
+            if(props.resStats.brnajmovalast == 0 || props.resStats.brnajmovalast){
                 this.setState({ rezPostotak: "- " });
             }
             else{
                 this.setState({ rezPostotak: (Math.abs((props.resStats.brnajmovathis/props.resStats.brnajmovalast)-1))*100 });
             }
 
-            if(props.resStats.ukupnolast == 0){
+            if(props.resStats.ukupnolast == 0 || !props.resStats.ukupnolast){
                 this.setState({ prihodPostotak: "- " });
             }
             else{
                 this.setState({ prihodPostotak: (Math.abs((props.resStats.ukupnothis/props.resStats.ukupnolast)-1)).toFixed(4)*100 });
             }
             
-            if(props.resStats.korisnicilast == 0){
+            if(props.resStats.korisnicilast == 0 || !props.resStats.korisnicilast){
                 this.setState({ korisniciPostotak: "- " });
             }
             else{

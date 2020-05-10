@@ -440,4 +440,41 @@ router.get("/periodpricelist/:period", auth, (req, res) => {
     });
 });
 
+//dohvacanje modela odredenog proizvodaca za koji nije definirana cijena
+router.get('/newpricemodels/:sifproizvodac', auth, (req, res) => {
+    res.setHeader("content-type", "application/json");
+    res.setHeader("accept", "application/json");
+ 
+    db.any('SELECT sifmodel AS value, nazivmodel AS label FROM model NATURAL JOIN proizvodac WHERE sifmodel NOT IN (SELECT sifmodel from cjenik WHERE period = (SELECT period from cjenik WHERE period @> now()::date ORDER BY period DESC LIMIT 1)) AND sifproizvodac = $1',
+    [req.params.sifproizvodac]).then(data => {
+        res.send(data);
+    });  
+});
+
+//dodavanje cijene modela
+router.post("/addmodelprice", auth, (req, res) => {
+    const priceData = {
+        sifmodel: req.body.sifmodel,
+        cijenapodanu: req.body.cijenapodanu,
+        period: req.body.period
+    };
+    
+    //provjera podataka
+    if(!priceData.sifmodel || !priceData.cijenapodanu || !priceData.period){
+        return res.status(400).json({msg: "Došlo je do pogreške, pokušajte ponovno."});
+    }
+
+    db.none('INSERT INTO cjenik (sifmodel, cijenapodanu, period) VALUES (${sifmodel}, ${cijenapodanu}, ${period})', {
+        sifmodel: priceData.sifmodel,
+        cijenapodanu: priceData.cijenapodanu,
+        period: priceData.period
+    })
+    .then(data => {
+        return res.status(200).json({msg: "Uspješno"});
+    })
+    .catch(error => {
+        return res.status(400).json({msg: 'Dogodila se pogreška'});
+    });
+});
+
 module.exports = router;
