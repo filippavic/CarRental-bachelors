@@ -29,8 +29,8 @@ class AdminPriceHeader extends React.Component {
           <Container fluid>
             <div className="header-body">
               <Row style={{flexDirection:'column', alignItems:"center"}}>
-                <h1 style={{color: '#ffffff'}}>Ovdje možete vidjeti trenutne i prošle cjenike.</h1>        
-                <h4 style={{color: '#ffffff', fontWeight: 300}}>Također, možete dodati novi model vozila u postojeći cjenik.</h4>
+                <h1 style={{color: '#ffffff'}}>Ovdje možete vidjeti trenutne i neaktivne cjenike.</h1>        
+                <h4 style={{color: '#ffffff', fontWeight: 300}}>Također, možete dodati novi model vozila u trenutno aktivan cjenik.</h4>
               </Row>
             </div>
           </Container>

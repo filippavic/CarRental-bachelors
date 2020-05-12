@@ -29,7 +29,7 @@ export class AdminPastPricesCard extends Component {
       let dates = "";
       const splitDates = (this.props.period.period).split(",");
       var periodPocetak = moment(splitDates[0].substr(1)).format("DD.MM.YYYY.");
-      var periodKraj = moment(splitDates[1].slice(0, -1)).format("DD.MM.YYYY.");
+      var periodKraj = moment(splitDates[1].slice(0, -1)).subtract(1, 'day').format("DD.MM.YYYY.");
       dates = periodPocetak + " - " + periodKraj;
       this.setState({ dates: dates })
   }
@@ -59,7 +59,7 @@ export class AdminPastPricesCard extends Component {
                     onClick={() => this.collapsesToggle(this.props.period.period)}
                     aria-expanded={this.state.openedCollapses.includes(this.props.period.period)}
                 >
-                <h5 className="mb-0">Prošli cjenik ({this.state.dates})</h5>
+                <h5 className="mb-0">Neaktivan cjenik ({this.state.dates})</h5>
                 </CardHeader>
                 <Collapse
                     role="tabpanel"

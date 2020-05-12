@@ -477,4 +477,52 @@ router.post("/addmodelprice", auth, (req, res) => {
     });
 });
 
+//dohvati zadnji period za koji je definiran cjenik
+router.get("/lastperiod", auth, (req, res) => {
+    res.setHeader("content-type", "application/json");
+    res.setHeader("accept", "application/json");
+
+    db.one('SELECT period from cjenik ORDER BY period DESC LIMIT 1').then(data => {
+        res.send(data);
+    })
+    .catch(error => {
+        console.log(error);
+    });
+});
+
+//popis modela vozila u vlasnistvu
+router.get("/ownedmodels", auth, (req, res) => {
+    res.setHeader("content-type", "application/json");
+    res.setHeader("accept", "application/json");
+    db.any('SELECT DISTINCT sifmodel, nazivproizvodac, nazivmodel FROM vozilo NATURAL JOIN model NATURAL JOIN proizvodac').then(data => {
+        res.send(data);
+    })
+    .catch(error => {
+        console.log(error);
+    });
+});
+
+router.post("/addpricelist", auth, (req, res) => {
+    const priceData = req.body;
+    
+    //provjera podataka
+    if(!priceData){
+        return res.status(400).json({msg: "Došlo je do pogreške, pokušajte ponovno."});
+    }
+
+    db.tx(t => {
+        var queries = priceData.map(p => {
+            return t.none('INSERT INTO cjenik (sifmodel, cijenapodanu, period) VALUES(${sifmodel}, ${cijenapodanu}, ${period})', p);
+        });
+        return t.batch(queries);
+    })
+    .then(data => {
+        return res.status(200).json({msg: "Uspješno"});
+    })
+    .catch(error => {
+        return res.status(400).json({msg: 'Dogodila se pogreška'});
+    });
+
+});
+
 module.exports = router;
