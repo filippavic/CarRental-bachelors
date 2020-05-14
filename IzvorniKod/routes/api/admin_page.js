@@ -525,4 +525,48 @@ router.post("/addpricelist", auth, (req, res) => {
 
 });
 
+//dohvacanje podataka za graf popularnosti podruznica (prikupljanje)
+router.get('/pickuplocationgraph/', auth, (req, res) => {
+    res.setHeader("content-type", "application/json");
+    res.setHeader("accept", "application/json");
+    
+    db.any('SELECT siflokacija, nazivmjesto, COUNT (sifnajam) AS ukupno FROM lokacija LEFT JOIN najam on lokacija.siflokacija = najam.siflokprikupljanja NATURAL JOIN mjesto GROUP BY lokacija.siflokacija, nazivmjesto ORDER BY siflokacija',
+    []).then(data => {
+        res.send(data);
+    });
+});
+
+//dohvacanje podataka za graf popularnosti podruznica (vracanje)
+router.get('/dropofflocationgraph/', auth, (req, res) => {
+    res.setHeader("content-type", "application/json");
+    res.setHeader("accept", "application/json");
+    
+    db.any('SELECT siflokacija, nazivmjesto, COUNT (sifnajam) AS ukupno FROM lokacija LEFT JOIN najam on lokacija.siflokacija = najam.siflokvracanja NATURAL JOIN mjesto GROUP BY lokacija.siflokacija, nazivmjesto ORDER BY siflokacija',
+    []).then(data => {
+        res.send(data);
+    });
+});
+
+//dohvacanje najpopularnijih modela vozila
+router.get('/modelgraph/', auth, (req, res) => {
+    res.setHeader("content-type", "application/json");
+    res.setHeader("accept", "application/json");
+    
+    db.any('SELECT nazivmodel, COUNT (sifnajam) AS ukupno FROM vozilo NATURAL JOIN model LEFT JOIN najam ON najam.sifvozilo = vozilo.sifvozilo GROUP BY vozilo.sifmodel, nazivmodel ORDER BY ukupno DESC LIMIT 6',
+    []).then(data => {
+        res.send(data);
+    });
+});
+
+//dohvacanje najpopularnijih vrsta modela
+router.get('/modeltypegraph/', auth, (req, res) => {
+    res.setHeader("content-type", "application/json");
+    res.setHeader("accept", "application/json");
+    
+    db.any('SELECT nazivvrstamodel, COUNT (sifnajam) AS ukupno FROM vozilo NATURAL JOIN model RIGHT JOIN vrsta_model on model.sifvrstamodel = vrsta_model.sifvrstamodel LEFT JOIN najam ON najam.sifvozilo = vozilo.sifvozilo GROUP BY nazivvrstamodel ORDER BY ukupno DESC LIMIT 6',
+    []).then(data => {
+        res.send(data);
+    });
+});
+
 module.exports = router;

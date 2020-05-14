@@ -38,6 +38,7 @@ import AdminVehicleHeader from "../components/Headers/AdminVehicleHeader.js";
 import AdminVehicleTableRow from "../components/AdminPage/AdminVehicleTableRow";
 import VehicleDetailsModal from "../components/AdminPage/VehicleDetailsModal.js";
 import AddVehicleModal from "../components/AdminPage/AddVehicleModal.js";
+import AdminVehicleGraph from "../components/AdminPage/AdminVehicleGraph.js";
 
 import ReactLoading from 'react-loading';
 
@@ -204,6 +205,12 @@ class AdminVozila extends React.Component {
                 </Table>
             </Card>
           </div>
+
+          {/* Statistika */}
+          <div className="col" style={{marginTop: '50px'}}>
+            <AdminVehicleGraph />
+          </div>
+
         </Container>
       </>
     );

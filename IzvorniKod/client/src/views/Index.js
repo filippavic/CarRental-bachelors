@@ -181,7 +181,6 @@ class Index extends React.Component {
                     <Line
                       data={this.state.prihodData}
                       options={chartExample1.options}
-                      getDatasetAtEvent={e => console.log(e)}
                     />
                   </div>
                 </CardBody>

@@ -36,6 +36,7 @@ import {
 // core components
 import AdminLocationHeader from "../components/Headers/AdminLocationHeader.js";
 import AdminLocationTableRow from "../components/AdminPage/AdminLocationTableRow";
+import AdminLocationGraph from "../components/AdminPage/AdminLocationGraph.js";
 
 import ReactLoading from 'react-loading';
 import LocationModal from "../components/AdminPage/LocationModal.js";
@@ -256,8 +257,12 @@ class AdminLokacije extends React.Component {
                 </Table>
             </Card>
           </div>
-            
 
+          {/* Statistika */}
+          <div className="col" style={{marginTop: '50px'}}>
+            <AdminLocationGraph/>
+          </div>
+            
         </Container>
       </>
     );
