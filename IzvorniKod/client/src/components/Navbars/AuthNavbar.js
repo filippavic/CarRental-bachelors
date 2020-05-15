@@ -53,7 +53,6 @@ class AdminNavbar extends React.Component {
           <Container className="px-4">
             <NavbarBrand to="/" tag={Link}>
               <h2 style={{color: "white", textTransform:"none"}}>Rent-a-car</h2>
-              {/* <img alt="..." src={require("../../assets/img/brand/argon-react-white.png")} /> */}
             </NavbarBrand>
             <button className="navbar-toggler" id="navbar-collapse-main">
               <span className="navbar-toggler-icon" />
@@ -64,10 +63,6 @@ class AdminNavbar extends React.Component {
                   <Col className="collapse-brand" xs="6">
                     <Link to="/">
                       <h2 >Rent-a-car</h2>
-                      {/* <img
-                        alt="..."
-                        src={require("../../assets/img/brand/argon-react.png")}
-                      /> */}
                     </Link>
                   </Col>
                   <Col className="collapse-close" xs="6">

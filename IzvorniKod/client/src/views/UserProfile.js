@@ -169,8 +169,14 @@ class UserProfile extends React.Component {
                 this.setState({ msg: "Upisana korisnička imena su različita" });
             }
         }
-      
-    };
+    }
+
+    componentWillUnmount() {
+        // ispravlja gresku "Can't perform a React state update on an unmounted component"
+        this.setState = (state,callback)=>{
+            return;
+        };
+    }
 
     render() {
         return (

@@ -205,7 +205,14 @@ class AdminCjenik extends React.Component {
         });
 
         this.setState({isCjenikModalOpen: false});
-    };
+    }
+
+    componentWillUnmount() {
+        // ispravlja gresku "Can't perform a React state update on an unmounted component"
+        this.setState = (state,callback)=>{
+            return;
+        };
+    }
 
   
     render() {
@@ -264,7 +271,7 @@ class AdminCjenik extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                    {this.state.isFetching ? (<><ReactLoading type="bubbles" color="#8E8E93" height={'20%'} width={'20%'} /></>) : null}
+                    {this.state.isFetching ? (<><tr><td><ReactLoading type="bubbles" color="#8E8E93" height={'10%'} width={'10%'} /></td></tr></>) : null}
                     {this.state.currentPrices && this.state.currentPrices.map(price => (
                     <AdminPriceTableRow key={price.sifcjenik} price={price}/>))}
                     </tbody>

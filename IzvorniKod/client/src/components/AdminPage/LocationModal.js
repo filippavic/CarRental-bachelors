@@ -109,6 +109,13 @@ class LocationModal extends React.Component{
         this.props.addNewLocation(newLocation);
       }
 
+      componentWillUnmount() {
+        // ispravlja gresku "Can't perform a React state update on an unmounted component"
+        this.setState = (state,callback)=>{
+            return;
+        };
+      }
+
     render() {
         return (
             <Modal

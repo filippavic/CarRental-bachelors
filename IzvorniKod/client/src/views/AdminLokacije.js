@@ -17,7 +17,7 @@
 */
 import React from "react";
 import axios from 'axios';
-import { connect, ReactReduxContext } from 'react-redux';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 // reactstrap components
@@ -183,7 +183,14 @@ class AdminLokacije extends React.Component {
     });
 
     this.setState({isModalOpen: false});
-  };
+  }
+
+  componentWillUnmount() {
+    // ispravlja gresku "Can't perform a React state update on an unmounted component"
+    this.setState = (state,callback)=>{
+        return;
+    };
+  }
 
 
   render() {
@@ -223,7 +230,7 @@ class AdminLokacije extends React.Component {
                     </tr>
                   </thead>
                   <tbody>
-                  {this.state.isFetching ? (<><ReactLoading type="bubbles" color="#8E8E93" height={'20%'} width={'20%'} /></>) : null}
+                  {this.state.isFetching ? (<><tr><td><ReactLoading type="bubbles" color="#8E8E93" height={'10%'} width={'10%'} /></td></tr></>) : null}
                   {this.state.locations && this.state.locations.map(location => (
                     <AdminLocationTableRow key={location.siflokacija} location={location} isActive={true} changeLocationStatus={(values) => this.changeLocationStatus(values)}/>))}
                   </tbody>
@@ -250,7 +257,7 @@ class AdminLokacije extends React.Component {
                     </tr>
                   </thead>
                   <tbody>
-                  {this.state.isNotActiveFetching ? (<><ReactLoading type="bubbles" color="#8E8E93" height={'20%'} width={'20%'} /></>) : null}
+                  {this.state.isNotActiveFetching ? (<><tr><td><ReactLoading type="bubbles" color="#8E8E93" height={'10%'} width={'10%'} /></td></tr></>) : null}
                   {this.state.notactive && this.state.notactive.map(location => (
                     <AdminLocationTableRow key={location.siflokacija} location={location} isActive={false} changeLocationStatus={(values) => this.changeLocationStatus(values)}/>))}
                   </tbody>

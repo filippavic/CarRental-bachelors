@@ -61,6 +61,13 @@ class Povijest extends React.Component {
 		});
   }
 
+  componentWillUnmount() {
+    // ispravlja gresku "Can't perform a React state update on an unmounted component"
+    this.setState = (state,callback)=>{
+        return;
+    };
+  }
+
 
   render() {
     return (
@@ -86,7 +93,7 @@ class Povijest extends React.Component {
                     </tr>
                   </thead>
                   <tbody>
-                  {this.state.isFetching ? (<ReactLoading type="bubbles" color="#8E8E93" height={'20%'} width={'20%'} />) : null}
+                  {this.state.isFetching ? (<><tr><td><ReactLoading type="bubbles" color="#8E8E93" height={'30%'} width={'30%'} /></td></tr></>) : null}
                   {this.state.pastReservations && this.state.pastReservations.map(reservation => (
                     <UserTableRow key={reservation.sifnajam} reservation={reservation}/>))}
                   </tbody>

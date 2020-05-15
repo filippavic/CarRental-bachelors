@@ -120,19 +120,6 @@ class Login extends React.Component {
                     <Input placeholder="Lozinka" type="password" name="lozinka" autoComplete="current-password" onChange={this.onChange}/>
                   </InputGroup>
                 </FormGroup>
-                {/* <div className="custom-control custom-control-alternative custom-checkbox">
-                  <input
-                    className="custom-control-input"
-                    id=" customCheckLogin"
-                    type="checkbox"
-                  />
-                  <label
-                    className="custom-control-label"
-                    htmlFor=" customCheckLogin"
-                  >
-                    <span className="text-muted">Remember me</span>
-                  </label>
-                </div> */}
                 <div className="text-center">
                   <Button className="my-4" color="primary" type="button" onClick={this.onSubmit}>
                     Prijavi se
@@ -142,20 +129,10 @@ class Login extends React.Component {
             </CardBody>
           </Card>
           <Row className="mt-3">
-            {/* <Col xs="6">
-              <a
-                className="text-light"
-                href="#pablo"
-                onClick={e => e.preventDefault()}
-              >
-                <small>Forgot password?</small>
-              </a>
-            </Col> */}
             <Col xs="6">
               <a
                 className="text-light"
                 href="/auth/register"
-                //onClick={e => e.preventDefault()}
               >
                 <small>Stvorite novi račun</small>
               </a>

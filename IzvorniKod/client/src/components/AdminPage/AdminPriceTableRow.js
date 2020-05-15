@@ -1,11 +1,4 @@
 import React, { Component } from 'react';
-import {
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  UncontrolledDropdown
-} from "reactstrap";
-
 
 export class AdminPriceTableRow extends Component {
   constructor(props){

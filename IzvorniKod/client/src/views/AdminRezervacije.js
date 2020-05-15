@@ -17,7 +17,7 @@
 */
 import React from "react";
 import axios from 'axios';
-import { connect, ReactReduxContext } from 'react-redux';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 // reactstrap components
@@ -174,6 +174,13 @@ class AdminRezervacije extends React.Component {
     this.setState({sifNajam: value}, function () {this.setState({isModalOpen: true})})
   }
 
+  componentWillUnmount() {
+    // ispravlja gresku "Can't perform a React state update on an unmounted component"
+    this.setState = (state,callback)=>{
+        return;
+    };
+  }
+
 
   render() {
     return (
@@ -191,20 +198,6 @@ class AdminRezervacije extends React.Component {
             <Card className="shadow">
                 <CardHeader className="d-flex justify-content-between border-0">
                   <h3 className="mb-0">Aktivni najmovi</h3>
-                  {/* <div className="d-flex justify-content-between">
-                    <UncontrolledDropdown size="sm">
-                      <DropdownToggle caret color="secondary">
-                        Lok. prikupljanja
-                      </DropdownToggle>
-                      <DropdownMenu>
-                        {this.state.locations && this.state.locations.map(location => (
-                          <DropdownItem href="" key={location.value} onClick={e => e.preventDefault()}>
-                            {location.label}
-                          </DropdownItem>
-                        ))}
-                      </DropdownMenu>
-                    </UncontrolledDropdown>
-                  </div> */}
                 </CardHeader>
                 <Table className="align-items-center table-flush" responsive>
                   <thead className="thead-light">
@@ -222,7 +215,7 @@ class AdminRezervacije extends React.Component {
                     </tr>
                   </thead>
                   <tbody>
-                  {this.state.isFetching ? (<><ReactLoading type="bubbles" color="#8E8E93" height={'20%'} width={'20%'} /></>) : null}
+                  {this.state.isFetching ? (<><tr><td><ReactLoading type="bubbles" color="#8E8E93" height={'30%'} width={'30%'} /></td></tr></>) : null}
                   {this.state.rents && this.state.rents.map(rent => (
                     <AdminRentTableRow key={rent.sifnajam} rent={rent} setPickedUp={(values) => this.setPickedUp(values)} setFinished={(values) => this.setFinished(values)} openDetails={(value) => this.openDetails(value)}/>))}
                   </tbody>

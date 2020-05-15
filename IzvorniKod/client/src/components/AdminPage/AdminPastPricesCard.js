@@ -77,7 +77,7 @@ export class AdminPastPricesCard extends Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.state.isFetching ? (<><ReactLoading type="bubbles" color="#8E8E93" height={'20%'} width={'20%'} /></>) : null}
+                        {this.state.isFetching ? (<><tr><td><ReactLoading type="bubbles" color="#8E8E93" height={'30%'} width={'30%'} /></td></tr></>) : null}
                         {this.state.pastPrices && this.state.pastPrices.map(price => (
                             <>
                             <tr key={price.sifcjenik}>

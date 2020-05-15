@@ -17,23 +17,15 @@
 */
 import React from "react";
 import axios from 'axios';
-// node.js library that concatenates classes (strings)
-import classnames from "classnames";
 // javascipt plugin for creating charts
 import Chart from "chart.js";
 // react plugin used to create charts
 import { Line, Bar } from "react-chartjs-2";
 // reactstrap components
 import {
-  Button,
   Card,
   CardHeader,
   CardBody,
-  NavItem,
-  NavLink,
-  Nav,
-  Progress,
-  Table,
   Container,
   Row,
   Col
@@ -142,11 +134,11 @@ class Index extends React.Component {
   }
 
   componentWillUnmount() {
-    // fix Warning: Can't perform a React state update on an unmounted component
+    // ispravlja gresku "Can't perform a React state update on an unmounted component"
     this.setState = (state,callback)=>{
         return;
     };
-}
+  }
 
 
   render() {

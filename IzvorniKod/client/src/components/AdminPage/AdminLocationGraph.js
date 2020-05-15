@@ -104,6 +104,13 @@ export class AdminLocationGraph extends Component {
             });
   }
 
+  componentWillUnmount() {
+    // ispravlja gresku "Can't perform a React state update on an unmounted component"
+    this.setState = (state,callback)=>{
+        return;
+    };
+  }
+
 
     render() {
         return (
@@ -111,14 +118,14 @@ export class AdminLocationGraph extends Component {
             <Container >
           <Row>
             <Col xl="6">
-              <Card className="bg-gradient-default shadow">
+              <Card className="shadow">
                 <CardHeader className="bg-transparent">
                   <Row className="align-items-center">
                     <div className="col">
-                      <h6 className="text-uppercase text-light ls-1 mb-1">
+                      <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Popularnost podružnica
                       </h6>
-                      <h4 className="text-white mb-0">Broj prikupljanja</h4>
+                      <h4 className="mb-0">Broj prikupljanja</h4>
                     </div>
                     <div className="col">
                     </div>
@@ -136,14 +143,14 @@ export class AdminLocationGraph extends Component {
               </Card>
             </Col>
             <Col xl="6">
-              <Card className="bg-gradient-default shadow">
+              <Card className="shadow">
                 <CardHeader className="bg-transparent">
                   <Row className="align-items-center">
                     <div className="col">
-                      <h6 className="text-uppercase text-light ls-1 mb-1">
+                      <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Popularnost podružnica
                       </h6>
-                      <h4 className="text-white mb-0">Broj vraćanja</h4>
+                      <h4 className="mb-0">Broj vraćanja</h4>
                     </div>
                   </Row>
                 </CardHeader>

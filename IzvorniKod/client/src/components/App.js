@@ -16,8 +16,7 @@
 
 */
 import React, { useEffect } from "react";
-import ReactDOM from "react-dom";
-import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 
 import { Provider } from 'react-redux';
 import store from '../store';
@@ -52,7 +51,6 @@ function App() {
                         <PrivateRoute path="/admin" component={AdminLayout} />
                         <Route path="/auth" render={props => <AuthLayout {...props} />} />
                         <Route path="/" render={props => <StartLayout {...props} />} />
-                        {/*<Redirect from="/" to="/admin/index" />*/}
                     </Switch>
                     </BrowserRouter>
             </Provider>
