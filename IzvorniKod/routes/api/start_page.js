@@ -68,6 +68,18 @@ router.post("/reservation", async function(req, res, next) {
     // return res.status(200).json({ msg: 'Uspješno rezervirano'});
 });
 
+//popis vrsta vozila
+router.get("/vehicletypes", async function(req, res, next) {
+    res.setHeader("content-type", "application/json");
+    res.setHeader("accept", "application/json");
+    db.any('SELECT sifvrstamodel, nazivvrstamodel FROM vrsta_model').then(data => {
+        res.send(data);
+    })
+    .catch(error => {
+        console.log(error);
+    });
+});
+
 
 
 module.exports = router;

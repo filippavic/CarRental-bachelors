@@ -25,3 +25,13 @@ html {
     width: 150px;
     height: fit-content;
 }
+
+#filter-dropdown{
+    border: #C04848;
+    color: #f7fafc;
+    margin-right: 10px;
+}
+
+#filter-dropdown:active{
+    background-color: #C04848 !important;
+}

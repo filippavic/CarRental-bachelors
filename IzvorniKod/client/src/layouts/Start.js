@@ -2,10 +2,12 @@
 
 import React, { useEffect, useState, useRef } from 'react'
 
-import { Container, Row, Col, Alert, Button } from "reactstrap";
+import { Container, Row, Col, Alert, Button, DropdownToggle, DropdownMenu, DropdownItem, UncontrolledDropdown } from "reactstrap";
 import axios from 'axios';
 import Lottie from 'react-lottie';
 import { useSelector } from 'react-redux';
+import filter from 'lodash/filter';
+import orderBy from 'lodash/orderBy';
 
 import AuthNavbar from "../components/Navbars/AuthNavbar.js";
 import AuthFooter from "../components/Footers/AuthFooter.js";
@@ -26,6 +28,14 @@ var moment = require('moment');
 
 export default function Start() {
     const [vehicleData, setVehicleData] = useState({
+      vehicles: [],
+      isFetching: false
+    });
+    const [vehicleTypes, setVehicleTypes] = useState({
+      types: [],
+      isFetching: false
+    });
+    const [vehicleDataFiltered, setVehicleDataFiltered] = useState({
       vehicles: [],
       isFetching: false
     });
@@ -104,13 +114,15 @@ export default function Start() {
     //sortiranje
     const toggleSort = () => {
         if (isSortedAscending){
-            let sortedVehicles = vehicleData.vehicles.sort((a, b) => (b.cijenapodanu - a.cijenapodanu));
-            setVehicleData({vehicles: sortedVehicles});
+            //let sortedVehicles = vehicleData.vehicles.sort((a, b) => (b.cijenapodanu - a.cijenapodanu));
+            let sortedVehicles = orderBy(vehicleDataFiltered.vehicles, 'cijenapodanu', 'desc');
+            setVehicleDataFiltered({vehicles: sortedVehicles});
             setIsSortedAscending(false);
         }
         else{
-            let sortedVehicles = vehicleData.vehicles.sort((a, b) => (a.cijenapodanu - b.cijenapodanu));
-            setVehicleData({vehicles: sortedVehicles});
+            //let sortedVehicles = vehicleData.vehicles.sort((a, b) => (a.cijenapodanu - b.cijenapodanu));
+            let sortedVehicles = orderBy(vehicleDataFiltered.vehicles, 'cijenapodanu', 'asc');
+            setVehicleDataFiltered({vehicles: sortedVehicles});
             setIsSortedAscending(true);
         }
     }
@@ -120,12 +132,20 @@ export default function Start() {
         const fetchData = async () => {
             try {
               setVehicleData({vehicles: vehicleData.vehicles, isFetching: true});
+              setVehicleDataFiltered({vehicles: vehicleData.vehicles, isFetching: true});
               const response = await axios.get(`/api/start_page/vehicles/${options.datumVrijemeOd}/${options.datumVrijemeDo}/${options.sifLokPrikupljanja}`);
               setVehicleData({vehicles: response.data, isFetching: false});
+              setVehicleDataFiltered({vehicles: response.data, isFetching: false});
+
+              setVehicleTypes({types: vehicleTypes.types, isFetching: true});
+              const vrste = await axios.get(`/api/start_page/vehicletypes/`);
+              setVehicleTypes({types: vrste.data, isFetching: false});
+
               setIsReady(true);
               scrollToRef(vehicleRef);
           } catch (e) {
               setVehicleData({vehicles: vehicleData.vehicles, isFetching: false});
+              setVehicleDataFiltered({vehicles: vehicleData.vehicles, isFetching: false});
           }
           };
         if (didMount) fetchData();
@@ -177,7 +197,22 @@ export default function Start() {
       setTimeout(function() {
         setIsReady(false);
       }, 700);     
-  }
+    }
+
+    //filtriranje vozila
+    const filterVehicles = (e) => {
+      e.preventDefault();
+      
+      let filterBy = e.target.getAttribute('filter');
+      if (filterBy){
+        let vehiclesFiltered = filter(vehicleData.vehicles, {nazivvrstamodel: filterBy});
+        setVehicleDataFiltered({vehicles: vehiclesFiltered});
+      }
+      else{
+        setVehicleDataFiltered({vehicles: vehicleData.vehicles});
+      }
+
+    }
 
 
     return (
@@ -245,20 +280,37 @@ export default function Start() {
                 height={100}/>
               </div>  
             }
-            {isReady && !vehicleData.isFetching &&
+            {isReady && !vehicleDataFiltered.isFetching &&
               <div className="vehicle-list-menu">
                 <div className="vehicle-list-menu-left">
                   
-                  <h3>U ponudi imamo {vehicleData.vehicles ? vehicleData.vehicles.length : ''} {vehicleData.vehicles && vehicleData.vehicles.length===1 ? "vozilo" : "vozila"}:</h3>
+                  <h3>U ponudi imamo {vehicleDataFiltered.vehicles ? vehicleDataFiltered.vehicles.length : ''} {vehicleDataFiltered.vehicles && vehicleDataFiltered.vehicles.length===1 ? "vozilo" : "vozila"}:</h3>
                 </div>
-                <div className="vehicle-list-menu-right"> 
+                <div className="vehicle-list-menu-right">
+                  <UncontrolledDropdown group>
+                    <DropdownToggle id="filter-dropdown" caret color="primary" outline size="sm">
+                      Vrsta vozila
+                    </DropdownToggle>
+                    <DropdownMenu>
+                      {isReady && vehicleTypes.types && vehicleTypes.types.map (type => (
+                      <DropdownItem key={type.sifvrstamodel} filter={type.nazivvrstamodel} href=""
+                      style={{cursor: 'pointer'}} onClick={e => filterVehicles(e)}>
+                      {type.nazivvrstamodel}
+                      </DropdownItem>
+                      ))}
+                      <DropdownItem divider />
+                      <DropdownItem filter="" href="" style={{cursor: 'pointer'}} onClick={e => filterVehicles(e)}>
+                        Ukloni filtar
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
                   <Button id="sort-button" color="primary" outline size="sm" type="button" onClick={() => toggleSort()}>
                       Sortiraj {isSortedAscending ? "silazno" : "uzlazno"}
                   </Button>
                 </div>
               </div>
             }            
-            {isReady && vehicleData.vehicles && vehicleData.vehicles.map (vehicle => (
+            {isReady && vehicleDataFiltered.vehicles && vehicleDataFiltered.vehicles.map (vehicle => (
               <CarCard key={vehicle.sifvozilo} vehicle={vehicle} razlika={razlika} reserve={(values) => reserveCar(values)}/>
             ))}
           </div>
