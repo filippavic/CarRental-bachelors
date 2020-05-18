@@ -3,6 +3,7 @@
 import React from 'react'
 import axios from 'axios';
 import Select from 'react-select';
+import orderBy from 'lodash/orderBy';
 
 // reactstrap components
 import {
@@ -77,7 +78,8 @@ class AddVehicleModal extends React.Component{
     componentDidMount(){
         axios.get(`/api/admin_page/manufacturers/`).then(res => {
             const data = res.data;
-            this.setState({ proizvodaci: data });
+            let sortedProizvodaci = orderBy(data, 'label', 'asc');
+            this.setState({ proizvodaci: sortedProizvodaci });
         });
         axios.get(`/api/admin_page/locationselect/`).then(res => {
             const data = res.data;
@@ -94,7 +96,8 @@ class AddVehicleModal extends React.Component{
         this.setState({ sifproizvodac });
         axios.get(`/api/admin_page/models/${sifproizvodac.value}`).then(res => {
             const data = res.data;
-            this.setState({ modeli: data });
+            let sortedModeli = orderBy(data, 'label', 'asc');
+            this.setState({ modeli: sortedModeli });
         });
     };
 
