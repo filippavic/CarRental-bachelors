@@ -1,11 +1,11 @@
 # Deploy na Heroku
-# client/
-# .vscode/
+client/
+.vscode/
 
 # Push na GitLab
-client/node_modules/
-build/
-package-lock.json
+# client/node_modules/
+# build/
+# package-lock.json
 
 node_modules/
 client/build/
