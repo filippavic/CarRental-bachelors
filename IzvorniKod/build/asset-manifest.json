@@ -1,20 +1,20 @@
 {
   "files": {
-    "main.css": "/static/css/main.fbd59ab2.chunk.css",
-    "main.js": "/static/js/main.ee59ab40.chunk.js",
-    "main.js.map": "/static/js/main.ee59ab40.chunk.js.map",
+    "main.css": "/static/css/main.57690db3.chunk.css",
+    "main.js": "/static/js/main.5209af25.chunk.js",
+    "main.js.map": "/static/js/main.5209af25.chunk.js.map",
     "runtime-main.js": "/static/js/runtime-main.20094543.js",
     "runtime-main.js.map": "/static/js/runtime-main.20094543.js.map",
     "static/css/2.79838944.chunk.css": "/static/css/2.79838944.chunk.css",
-    "static/js/2.22635948.chunk.js": "/static/js/2.22635948.chunk.js",
-    "static/js/2.22635948.chunk.js.map": "/static/js/2.22635948.chunk.js.map",
+    "static/js/2.a4c8c308.chunk.js": "/static/js/2.a4c8c308.chunk.js",
+    "static/js/2.a4c8c308.chunk.js.map": "/static/js/2.a4c8c308.chunk.js.map",
     "index.html": "/index.html",
-    "precache-manifest.26888c5740a11df2637e4fb7a3c0e77d.js": "/precache-manifest.26888c5740a11df2637e4fb7a3c0e77d.js",
+    "precache-manifest.172735f783e7bba236277e1911a94278.js": "/precache-manifest.172735f783e7bba236277e1911a94278.js",
     "service-worker.js": "/service-worker.js",
     "static/css/2.79838944.chunk.css.map": "/static/css/2.79838944.chunk.css.map",
-    "static/css/main.fbd59ab2.chunk.css.map": "/static/css/main.fbd59ab2.chunk.css.map",
-    "static/js/2.22635948.chunk.js.LICENSE.txt": "/static/js/2.22635948.chunk.js.LICENSE.txt",
-    "static/js/main.ee59ab40.chunk.js.LICENSE.txt": "/static/js/main.ee59ab40.chunk.js.LICENSE.txt",
+    "static/css/main.57690db3.chunk.css.map": "/static/css/main.57690db3.chunk.css.map",
+    "static/js/2.a4c8c308.chunk.js.LICENSE.txt": "/static/js/2.a4c8c308.chunk.js.LICENSE.txt",
+    "static/js/main.5209af25.chunk.js.LICENSE.txt": "/static/js/main.5209af25.chunk.js.LICENSE.txt",
     "static/media/argon-react.png": "/static/media/argon-react.f38ddea9.png",
     "static/media/all.min.css": "/static/media/fa-solid-900.cdfec5cf.woff",
     "static/media/nucleo.css": "/static/media/nucleo-icons.f82ec6ba.ttf",
@@ -23,8 +23,8 @@
   "entrypoints": [
     "static/js/runtime-main.20094543.js",
     "static/css/2.79838944.chunk.css",
-    "static/js/2.22635948.chunk.js",
-    "static/css/main.fbd59ab2.chunk.css",
-    "static/js/main.ee59ab40.chunk.js"
+    "static/js/2.a4c8c308.chunk.js",
+    "static/css/main.57690db3.chunk.css",
+    "static/js/main.5209af25.chunk.js"
   ]
 }
