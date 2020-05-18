@@ -36,6 +36,7 @@ import {
 
 import AdminVehicleHeader from "../components/Headers/AdminVehicleHeader.js";
 import AdminVehicleTableRow from "../components/AdminPage/AdminVehicleTableRow";
+import AdminDVehicleTableRow from "../components/AdminPage/AdminDVehicleTableRow";
 import VehicleDetailsModal from "../components/AdminPage/VehicleDetailsModal.js";
 import AddVehicleModal from "../components/AdminPage/AddVehicleModal.js";
 import AdminVehicleGraph from "../components/AdminPage/AdminVehicleGraph.js";
@@ -53,7 +54,9 @@ class AdminVozila extends React.Component {
               isSortedAscending: null,
               isModalOpen: false,
               sifVozilo: null,
-              isAddModalOpen: false
+              isAddModalOpen: false,
+              deactivated: [],
+              isDeactivatedFetching: false
       };
     }
 
@@ -62,11 +65,16 @@ class AdminVozila extends React.Component {
     }
 
     componentDidMount() {
-      this.setState({ vehicles: this.state.vehicles, isFetching: true });
+      this.setState({ vehicles: this.state.vehicles, deactivated: this.state.deactivated, isFetching: true, isDeactivatedFetching: true });
       axios.get(`/api/admin_page/vehicles/`).then(res => {
           const vehicles = res.data;
           let sortedVehicles = orderBy(vehicles, 'sifvozilo', 'asc');
         this.setState({ vehicles: sortedVehicles, isSortedAscending: true, isFetching: false});
+      });
+      axios.get(`/api/admin_page/deactivatedvehicles/`).then(res => {
+        const vehicles = res.data;
+        let sortedVehicles = orderBy(vehicles, 'sifvozilo', 'asc');
+        this.setState({ deactivated: sortedVehicles, isDeactivatedFetching: false});
       });
     }
 
@@ -141,6 +149,66 @@ class AdminVozila extends React.Component {
       this.setState({isAddModalOpen: false});
     }
 
+    //deaktiviranje vozila
+    deactivateVehicle = (sifvozilo) => {
+
+      axios.post(`/api/admin_page/deactivatevehicle/${sifvozilo}`)
+      .then(res => {
+        if(res.status === 200){
+          this.setState({msgSuccess: "Vozilo uspješno deaktivirano"});
+
+          //ponovno dohvacanje vozila
+          this.setState({ vehicles: this.state.vehicles, deactivated: this.state.deactivated, isFetching: true, isDeactivatedFetching: true });
+          axios.get(`/api/admin_page/vehicles/`).then(res => {
+              const vehicles = res.data;
+              let sortedVehicles = orderBy(vehicles, 'sifvozilo', 'asc');
+            this.setState({ vehicles: sortedVehicles, isSortedAscending: true, isFetching: false});
+          });
+          axios.get(`/api/admin_page/deactivatedvehicles/`).then(res => {
+            const vehicles = res.data;
+            let sortedVehicles = orderBy(vehicles, 'sifvozilo', 'asc');
+            this.setState({ deactivated: sortedVehicles, isDeactivatedFetching: false});
+          });
+        }
+        else{
+          throw Error;
+        }       
+      })
+      .catch(err => {
+          this.setState({msgFail: "Došlo je do pogreške, pokušajte ponovno"})
+      });
+    }
+
+    //aktiviranje vozila
+    activateVehicle = (sifvozilo) => {
+
+      axios.post(`/api/admin_page/activatevehicle/${sifvozilo}`)
+      .then(res => {
+        if(res.status === 200){
+          this.setState({msgSuccess: "Vozilo uspješno aktivirano"});
+
+          //ponovno dohvacanje vozila
+          this.setState({ vehicles: this.state.vehicles, deactivated: this.state.deactivated, isFetching: true, isDeactivatedFetching: true });
+          axios.get(`/api/admin_page/vehicles/`).then(res => {
+              const vehicles = res.data;
+              let sortedVehicles = orderBy(vehicles, 'sifvozilo', 'asc');
+            this.setState({ vehicles: sortedVehicles, isSortedAscending: true, isFetching: false});
+          });
+          axios.get(`/api/admin_page/deactivatedvehicles/`).then(res => {
+            const vehicles = res.data;
+            let sortedVehicles = orderBy(vehicles, 'sifvozilo', 'asc');
+            this.setState({ deactivated: sortedVehicles, isDeactivatedFetching: false});
+          });
+        }
+        else{
+          throw Error;
+        }       
+      })
+      .catch(err => {
+          this.setState({msgFail: "Došlo je do pogreške, pokušajte ponovno"})
+      });
+    }
+
     componentWillUnmount() {
       // ispravlja gresku "Can't perform a React state update on an unmounted component"
       this.setState = (state,callback)=>{
@@ -207,7 +275,7 @@ class AdminVozila extends React.Component {
                   <tbody>
                   {this.state.isFetching ? (<><tr><td><ReactLoading type="bubbles" color="#8E8E93" height={'30%'} width={'30%'} /></td></tr></>) : null}
                   {this.state.vehicles && this.state.vehicles.map(vehicle => (
-                    <AdminVehicleTableRow key={vehicle.sifvozilo} vehicle={vehicle} openDetails={(value) => this.openDetails(value)}/>))}
+                    <AdminVehicleTableRow key={vehicle.sifvozilo} vehicle={vehicle} openDetails={(value) => this.openDetails(value)} deactivateVehicle={(sifvozilo) => this.deactivateVehicle(sifvozilo)}/>))}
                   </tbody>
                 </Table>
             </Card>
@@ -216,6 +284,36 @@ class AdminVozila extends React.Component {
           {/* Statistika */}
           <div className="col" style={{marginTop: '50px'}}>
             <AdminVehicleGraph />
+          </div>
+
+          {/* Deaktivirana vozila */}
+          <div className="col" style={{marginTop: '50px'}}>
+            <Card className="shadow">
+                <CardHeader className="border-0">
+                  <Row className="align-items-center">
+                        <Col xs="8">
+                        <h3 className="mb-0">Deaktivirana vozila</h3>
+                        </Col>
+                    </Row>             
+                </CardHeader>
+                <Table className="align-items-center table-flush" responsive>
+                  <thead className="thead-light">
+                    <tr>
+                      <th>Šifra</th>
+                      <th>Proizvođač</th>
+                      <th>Model</th>
+                      <th>Vrsta</th>
+                      <th>Registracija</th>
+                      <th scope="col" />
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {this.state.isDeactivatedFetching ? (<><tr><td><ReactLoading type="bubbles" color="#8E8E93" height={'30%'} width={'30%'} /></td></tr></>) : null}
+                  {this.state.deactivated && this.state.deactivated.map(vehicle => (
+                    <AdminDVehicleTableRow key={vehicle.sifvozilo} vehicle={vehicle} activateVehicle={(sifvozilo) => this.activateVehicle(sifvozilo)}/>))}
+                  </tbody>
+                </Table>
+            </Card>
           </div>
 
         </Container>

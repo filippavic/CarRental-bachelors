@@ -273,11 +273,23 @@ router.get('/rentinfo/:sifnajam', auth, (req, res) => {
     });  
 });
 
-//popis vozila u vlasnistvu
+//popis aktivnih vozila u vlasnistvu
 router.get("/vehicles", auth, (req, res) => {
     res.setHeader("content-type", "application/json");
     res.setHeader("accept", "application/json");
-    db.any('SELECT sifvozilo, registratskaoznaka, nazivproizvodac, nazivmodel, nazivvrstamodel FROM vozilo NATURAL JOIN model NATURAL JOIN vrsta_model NATURAL JOIN proizvodac').then(data => {
+    db.any('SELECT sifvozilo, registratskaoznaka, nazivproizvodac, nazivmodel, nazivvrstamodel FROM vozilo NATURAL JOIN model NATURAL JOIN vrsta_model NATURAL JOIN proizvodac WHERE aktivno=TRUE').then(data => {
+        res.send(data);
+    })
+    .catch(error => {
+        console.log(error);
+    });
+});
+
+//popis neaktivnih vozila u vlasnistvu
+router.get("/deactivatedvehicles", auth, (req, res) => {
+    res.setHeader("content-type", "application/json");
+    res.setHeader("accept", "application/json");
+    db.any('SELECT sifvozilo, registratskaoznaka, nazivproizvodac, nazivmodel, nazivvrstamodel FROM vozilo NATURAL JOIN model NATURAL JOIN vrsta_model NATURAL JOIN proizvodac WHERE aktivno=FALSE').then(data => {
         res.send(data);
     })
     .catch(error => {
@@ -567,6 +579,32 @@ router.get('/modeltypegraph/', auth, (req, res) => {
     []).then(data => {
         res.send(data);
     });
+});
+
+//deaktiviranje vozila
+router.post("/deactivatevehicle/:sifvozilo", auth, (req, res) => {
+
+    db.one('UPDATE vozilo SET aktivno=FALSE WHERE sifvozilo=$1 returning "sifvozilo"',
+    [req.params.sifvozilo]).then(data => {
+        return res.status(200).json({msg: "Promijenjeno"});
+    })
+    .catch(error => {
+        res.status(400).json({ msg: 'Dogodila se pogreška'});
+    });
+
+});
+
+//aktiviranje vozila
+router.post("/activatevehicle/:sifvozilo", auth, (req, res) => {
+
+    db.one('UPDATE vozilo SET aktivno=TRUE WHERE sifvozilo=$1 returning "sifvozilo"',
+    [req.params.sifvozilo]).then(data => {
+        return res.status(200).json({msg: "Promijenjeno"});
+    })
+    .catch(error => {
+        res.status(400).json({ msg: 'Dogodila se pogreška'});
+    });
+
 });
 
 module.exports = router;

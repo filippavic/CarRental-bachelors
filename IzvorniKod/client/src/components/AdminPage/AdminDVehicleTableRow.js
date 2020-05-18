@@ -7,19 +7,14 @@ import {
 } from "reactstrap";
 
 
-export class AdminVehicleTableRow extends Component {
+export class AdminDVehicleTableRow extends Component {
   constructor(props){
     super(props);
   }
 
-  openDetails = (e) => {
+  activateVehicle = (e) => {
     e.preventDefault();
-    this.props.openDetails(this.props.vehicle.sifvozilo);
-  }
-
-  deactivateVehicle = (e) => {
-    e.preventDefault();
-    this.props.deactivateVehicle(this.props.vehicle.sifvozilo);
+    this.props.activateVehicle(this.props.vehicle.sifvozilo);
   }
 
 
@@ -47,15 +42,9 @@ export class AdminVehicleTableRow extends Component {
                     <DropdownMenu className="dropdown-menu-arrow" right>
                       <DropdownItem
                         href=""
-                        onClick={this.openDetails}
+                        onClick={this.activateVehicle}
                       >
-                        Detalji
-                      </DropdownItem>
-                      <DropdownItem
-                        href=""
-                        onClick={this.deactivateVehicle}
-                      >
-                        Deaktiviraj
+                        Aktiviraj
                       </DropdownItem>
                     </DropdownMenu>
                   </UncontrolledDropdown>
@@ -66,4 +55,4 @@ export class AdminVehicleTableRow extends Component {
     }
 }
 
-export default AdminVehicleTableRow
+export default AdminDVehicleTableRow
