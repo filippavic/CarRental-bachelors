@@ -67,23 +67,24 @@ class AddVehicleModal extends React.Component{
             sifmodel: null,
             registracija: null,
             siflokacija: null,
+            sifmotor: null,
+            sifmjenjac: null,
+            potrosnja: null,
             msg: null
         };
         this.proizvodaci = [];
         this.modeli = [];
         this.lokacije = [];
+        this.motori = [];
+        this.mjenjaci = [];
     }
 
     //ucitavanje popisa proizvodaca
     componentDidMount(){
-        axios.get(`/api/admin_page/manufacturers/`).then(res => {
+        axios.get(`/api/admin_page/vehicleoptions/`).then(res => {
             const data = res.data;
-            let sortedProizvodaci = orderBy(data, 'label', 'asc');
-            this.setState({ proizvodaci: sortedProizvodaci });
-        });
-        axios.get(`/api/admin_page/locationselect/`).then(res => {
-            const data = res.data;
-            this.setState({ lokacije: data });
+            let sortedProizvodaci = orderBy(data.manuf, 'label', 'asc');
+            this.setState({ proizvodaci: sortedProizvodaci, motori: data.engines, mjenjaci: data.transmissions, lokacije: data.locations });
         });
     }
 
@@ -111,18 +112,28 @@ class AddVehicleModal extends React.Component{
         this.setState({ siflokacija });
     };
 
+    //funkcija za odabir motora
+    handleEngineSelect = sifmotor => {
+        this.setState({ sifmotor });
+    };
+
+    //funkcija za odabir mjenjaca
+    handleTransmSelect = sifmjenjac => {
+        this.setState({ sifmjenjac });
+    };
+
     onSubmit = e => {
         e.preventDefault();
     
         //slanje podataka za dodavanje novog vozila
-        const { sifmodel, siflokacija } = this.state;
+        const { sifmodel, siflokacija, sifmotor, sifmjenjac, potrosnja } = this.state;
        
         var registracija = null;
         if (this.state.registracija){
             registracija = this.state.registracija.toUpperCase();
         }
 
-        if (!this.state.registracija || !sifmodel || !siflokacija || !registracija){
+        if (!this.state.registracija || !sifmodel || !siflokacija || !registracija || !sifmotor || !sifmjenjac || !potrosnja){
             this.setState({msg: 'Potrebno je ispuniti sva polja'});
         }
         else{
@@ -134,7 +145,10 @@ class AddVehicleModal extends React.Component{
             sifmodel: sifmodel.value,
             siflokacija: siflokacija.value,
             registracija,
-            datumvrijeme
+            datumvrijeme,
+            sifmotor: sifmotor.value,
+            sifmjenjac: sifmjenjac.value,
+            potrosnja
             };
         
             this.props.addNewVehicle(newVehicle);
@@ -208,6 +222,67 @@ class AddVehicleModal extends React.Component{
                             </FormGroup>
                             </Col>
                         </Row>
+
+                        <hr className="my-1" />
+                        <h6 className="heading-small text-muted mb-3">
+                        Karakteristike
+                        </h6>
+                        <Row>
+                            <Col lg="5">
+                            <FormGroup>
+                                    <label
+                                    className="form-control-label"
+                                    >
+                                    Motor
+                                    </label>
+                                    <Select
+                                    styles={reactSelectStyles}
+                                    placeholder="Motor"
+                                    options={this.state.motori}
+                                    value={this.state.sifmotor}
+                                    onChange={this.handleEngineSelect}
+                                    />
+                            </FormGroup>
+                            </Col>
+                            <Col lg="4">
+                            <FormGroup>
+                                    <label
+                                    className="form-control-label"
+                                    >
+                                    Mjenjač
+                                    </label>
+                                    <Select
+                                    styles={reactSelectStyles}
+                                    placeholder="Mjenjač"
+                                    options={this.state.mjenjaci}
+                                    value={this.state.sifmjenjac}
+                                    onChange={this.handleTransmSelect}
+                                    />
+                            </FormGroup>
+                            </Col>
+                            <Col lg="3">
+                            <FormGroup>
+                                <label
+                                className="form-control-label"
+                                >
+                                Potrošnja
+                                </label>
+                                <Input
+                                className="form-control-alternative"
+                                id="input-potrosnja"
+                                placeholder="Potrošnja"
+                                type="number"
+                                name="potrosnja"
+                                onChange={this.onChange}
+                                />
+                                <label className="h6"> npr. 5.4</label>
+                            </FormGroup>
+                            </Col>
+                        </Row>
+                        <hr className="my-1" />
+                        <h6 className="heading-small text-muted mb-3">
+                        Ostalo
+                        </h6>
                         <Row>
                             <Col lg="6">
                             <FormGroup>

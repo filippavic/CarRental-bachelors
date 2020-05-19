@@ -389,17 +389,21 @@ router.get("/manufacturers", auth, (req, res) => {
     });
 });
 
-//popis aktivnih podruznica za odabir
-router.get("/locationselect", auth, (req, res) => {
+//popis opcija
+router.get("/vehicleoptions", auth, (req, res) => {
     res.setHeader("content-type", "application/json");
     res.setHeader("accept", "application/json");
-    db.any('SELECT lokacija.siflokacija AS value, ulica || \' \' || kucnibroj || \', \' || nazivmjesto AS label FROM lokacija NATURAL JOIN mjesto').then(data => {
+    
+    db.multi('SELECT sifproizvodac AS value, nazivproizvodac AS label FROM proizvodac;SELECT sifvrstamotor AS value, nazivvrstamotor AS label FROM vrsta_motor;SELECT sifvrstamjenjac AS value, nazivvrstamjenjac AS label FROM vrsta_mjenjac;SELECT lokacija.siflokacija AS value, ulica || \' \' || kucnibroj || \', \' || nazivmjesto AS label FROM lokacija NATURAL JOIN mjesto')
+    .then(([manuf, engines, transmissions, locations]) => {
+        const data = {manuf, engines, transmissions, locations};
         res.send(data);
     })
     .catch(error => {
         console.log(error);
     });
 });
+
 
 //dohvacanje modela odredenog proizvodaca
 router.get('/models/:sifproizvodac', auth, (req, res) => {
@@ -418,11 +422,14 @@ router.post("/newvehicle", auth, (req, res) => {
         sifmodel: req.body.sifmodel,
         registracija: req.body.registracija,
         siflokacija: req.body.siflokacija,
-        datumvrijeme: req.body.datumvrijeme
+        datumvrijeme: req.body.datumvrijeme,
+        sifmotor: req.body.sifmotor,
+        sifmjenjac: req.body.sifmjenjac,
+        potrosnja: req.body.potrosnja
     };
     
     //provjera podataka
-    if(!vehicleData.sifmodel || !vehicleData.registracija || !vehicleData.siflokacija || !vehicleData.datumvrijeme){
+    if(!vehicleData.sifmodel || !vehicleData.registracija || !vehicleData.siflokacija || !vehicleData.datumvrijeme || !vehicleData.sifmotor || !vehicleData.sifmjenjac || !vehicleData.potrosnja){
         return res.status(400).json({msg: "Došlo je do pogreške, pokušajte ponovno."});
     }
 
@@ -431,9 +438,12 @@ router.post("/newvehicle", auth, (req, res) => {
             registracija: vehicleData.registracija
         }).then(data => {
                 if(data.length === 0) {
-                    return t.one('INSERT INTO vozilo (sifmodel, registratskaoznaka, kilometraza) VALUES (${sifmodel}, ${registracija}, 0) RETURNING "sifvozilo"', {
+                    return t.one('INSERT INTO vozilo (sifmodel, registratskaoznaka, sifvrstamotor, sifvrstamjenjac, potrosnja, kilometraza) VALUES (${sifmodel}, ${registracija}, ${sifmotor}, ${sifmjenjac}, ${potrosnja}, 0) RETURNING "sifvozilo"', {
                         sifmodel: vehicleData.sifmodel,
-                        registracija: vehicleData.registracija
+                        registracija: vehicleData.registracija,
+                        sifmotor: vehicleData.sifmotor,
+                        sifmjenjac: vehicleData.sifmjenjac,
+                        potrosnja: vehicleData.potrosnja
                     });
                 }
                 return [];
