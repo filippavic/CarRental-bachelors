@@ -40,6 +40,7 @@ import AdminLocationGraph from "../components/AdminPage/AdminLocationGraph.js";
 
 import ReactLoading from 'react-loading';
 import LocationModal from "../components/AdminPage/LocationModal.js";
+import ChangeLocationModal from "../components/AdminPage/ChangeLocationModal.js";
 
 class AdminLokacije extends React.Component {
   constructor(props) {
@@ -52,7 +53,9 @@ class AdminLokacije extends React.Component {
       msgFail: null,
       msgSuccess: null,
       isSortedAscending: null,
-      isModalOpen: false
+      isModalOpen: false,
+      changeLocationData: null,
+      isChangeModalOpen: false
     };
   }
 
@@ -185,6 +188,61 @@ class AdminLokacije extends React.Component {
     this.setState({isModalOpen: false});
   }
 
+  //otvaranje prozora za promjenu podataka o lokaciji
+  openChangeModal = (locationData) => {
+    this.setState({changeLocationData: locationData}, function () {this.setState({isChangeModalOpen: true})})
+  };
+
+  //otvaranje/zatvaranje prozora za promjenu podataka o lokaciji
+  toggleChangeModal = (e) => {
+    e.preventDefault();
+    this.setState({isChangeModalOpen: !this.state.isChangeModalOpen});
+  }
+
+  //promjena podataka o podruznici
+  changeLocation = (changedLocation) => {
+    //headers
+    const config = {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }
+
+    const body = JSON.stringify(changedLocation);
+
+    axios.post('/api/admin_page/changelocation', body, config)
+    .then(res => {
+      if(res.status === 200){
+        this.setState({msgSuccess: "Podaci uspješno promijenjeni"});
+
+        //ponovno dohvacanje podruznica
+        this.setState({ locations: this.state.locations, isFetching: true });
+        axios.get(`/api/admin_page/locations/`).then(res => {
+          const locations = res.data;
+          let sortedLocations = locations.sort((a, b) => (a.siflokacija - b.siflokacija));
+          this.setState({ locations: sortedLocations, isFetching: false});
+        });
+        this.setState({ isSortedAscending: true });
+
+        this.setState({ notactive: this.state.notactive, isNotActiveFetching: true });
+        axios.get(`/api/admin_page/notactivelocations/`).then(res => {
+          const locations = res.data;
+          let sortedLocations = locations.sort((a, b) => (a.siflokacija - b.siflokacija));
+          this.setState({ notactive: sortedLocations, isNotActiveFetching: false});
+        });
+
+      }
+      else{
+        throw Error;
+      }       
+    })
+    .catch(err => {
+        this.setState({msgFail: "Došlo je do pogreške, pokušajte ponovno"})
+    });
+
+    this.setState({isChangeModalOpen: false});
+  };
+
   componentWillUnmount() {
     // ispravlja gresku "Can't perform a React state update on an unmounted component"
     this.setState = (state,callback)=>{
@@ -196,6 +254,10 @@ class AdminLokacije extends React.Component {
   render() {
     return (
       <>
+        {this.state.isChangeModalOpen ? (
+            <ChangeLocationModal isModalOpen={this.state.isChangeModalOpen} toggleModal={this.toggleChangeModal}
+            locationData={this.state.changeLocationData} changeLocation={(changedLocation) => this.changeLocation(changedLocation)}/>
+            ) : null}
         <LocationModal isModalOpen={this.state.isModalOpen} toggleModal={this.toggleModal} addNewLocation={(newLocation) => this.addNewLocation(newLocation)}/>
         <AdminLocationHeader isFetching={this.state.isFetching && this.state.isNotActiveFetching} brlokacija={this.state.locations.length + this.state.notactive.length} braktivnih={this.state.locations.length}/>
         {/* Page content */}
@@ -232,7 +294,9 @@ class AdminLokacije extends React.Component {
                   <tbody>
                   {this.state.isFetching ? (<><tr><td><ReactLoading type="bubbles" color="#8E8E93" height={'10%'} width={'10%'} /></td></tr></>) : null}
                   {this.state.locations && this.state.locations.map(location => (
-                    <AdminLocationTableRow key={location.siflokacija} location={location} isActive={true} changeLocationStatus={(values) => this.changeLocationStatus(values)}/>))}
+                    <AdminLocationTableRow key={location.siflokacija} location={location} isActive={true}
+                    changeLocationStatus={(values) => this.changeLocationStatus(values)}
+                    openChangeModal={(locationData) => this.openChangeModal(locationData)}/>))}
                   </tbody>
                 </Table>
             </Card>
@@ -259,7 +323,9 @@ class AdminLokacije extends React.Component {
                   <tbody>
                   {this.state.isNotActiveFetching ? (<><tr><td><ReactLoading type="bubbles" color="#8E8E93" height={'10%'} width={'10%'} /></td></tr></>) : null}
                   {this.state.notactive && this.state.notactive.map(location => (
-                    <AdminLocationTableRow key={location.siflokacija} location={location} isActive={false} changeLocationStatus={(values) => this.changeLocationStatus(values)}/>))}
+                    <AdminLocationTableRow key={location.siflokacija} location={location} isActive={false}
+                    changeLocationStatus={(values) => this.changeLocationStatus(values)}
+                    openChangeModal={(locationData) => this.openChangeModal(locationData)}/>))}
                   </tbody>
                 </Table>
             </Card>

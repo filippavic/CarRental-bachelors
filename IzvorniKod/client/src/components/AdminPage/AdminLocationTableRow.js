@@ -21,6 +21,19 @@ export class AdminLocationTableRow extends Component {
     this.props.changeLocationStatus(locationValues);
   }
 
+  openChangeModal = (e) => {
+    e.preventDefault();
+    const locationData = {
+      siflokacija: this.props.location.siflokacija,
+      ulica: this.props.location.ulica,
+      kucnibroj: this.props.location.kucnibroj,
+      pbrmjesto: this.props.location.pbrmjesto,
+      nazivmjesto: this.props.location.nazivmjesto,
+      koddrzava: this.props.location.koddrzava
+    };
+    this.props.openChangeModal(locationData);
+  }
+
 
     render() {
         return (
@@ -60,6 +73,12 @@ export class AdminLocationTableRow extends Component {
                         Otvori podružnicu
                       </DropdownItem>
                       )}
+                      <DropdownItem
+                        href=""
+                        onClick={this.openChangeModal}
+                      >
+                        Uredi
+                      </DropdownItem>
                       
                     </DropdownMenu>
                   </UncontrolledDropdown>

@@ -39,6 +39,7 @@ import AdminPriceTableRow from "../components/AdminPage/AdminPriceTableRow";
 import AdminPastPricesCard from "../components/AdminPage/AdminPastPricesCard.js";
 import AddModelPriceModal from "../components/AdminPage/AddModelPriceModal.js";
 import AddCjenikModal from "../components/AdminPage/AddCjenikModal.js";
+import ChangeModelPriceModal from "../components/AdminPage/ChangeModelPriceModal.js";
 
 import ReactLoading from 'react-loading';
 
@@ -57,7 +58,9 @@ class AdminCjenik extends React.Component {
             msgWarning: null,
             isAddModalOpen: false,
             period: null,
-            isCjenikModalOpen: false
+            isCjenikModalOpen: false,
+            changePriceData: null,
+            isChangeModalOpen: false
         };
     }
 
@@ -207,6 +210,52 @@ class AdminCjenik extends React.Component {
         this.setState({isCjenikModalOpen: false});
     }
 
+    //otvaranje prozora za promjenu cijene modela
+    openChangePrice = (priceData) => {
+        this.setState({changePriceData: priceData}, function () {this.setState({isChangeModalOpen: true})})
+    };
+
+    //otvaranje/zatvaranje prozora za promjenu cijene
+    toggleChangeModal = (e) => {
+        e.preventDefault();
+        this.setState({isChangeModalOpen: !this.state.isChangeModalOpen});
+    }
+
+    //promjena cijene modela
+    changePrice = (changedPrice) => {
+        //headers
+        const config = {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
+
+        const body = JSON.stringify(changedPrice);
+
+        axios.post('/api/admin_page/changemodelprice', body, config)
+        .then(res => {
+            if(res.status === 200){
+            this.setState({msgSuccess: "Cijena uspješno promijenjena"});
+
+            //ponovno dohvacanje cijena
+            this.setState({ currentPrices: this.state.currentPrices, isFetching: true });
+            axios.get(`/api/admin_page/currentpricelist/`).then(res => {
+                const prices = res.data;
+                let sortedPrices = orderBy(prices, 'cijenapodanu', 'asc');
+                this.setState({ currentPrices: sortedPrices, isSortedAscending: true, isFetching: false });
+            });
+            }
+            else{
+            throw Error;
+            }       
+        })
+        .catch(err => {
+            this.setState({msgFail: "Dogodila se greška. Pokušajte ponovno"})
+        });
+
+        this.setState({isChangeModalOpen: false});
+    };
+
     componentWillUnmount() {
         // ispravlja gresku "Can't perform a React state update on an unmounted component"
         this.setState = (state,callback)=>{
@@ -218,6 +267,10 @@ class AdminCjenik extends React.Component {
     render() {
         return (
         <>
+            {this.state.isChangeModalOpen ? (
+            <ChangeModelPriceModal isModalOpen={this.state.isChangeModalOpen} toggleModal={this.toggleChangeModal}
+            changePriceData={this.state.changePriceData} changePrice={(changedPrice) => this.changePrice(changedPrice)}/>
+            ) : null}
             {this.state.isAddModalOpen ? (
             <AddModelPriceModal isModalOpen={this.state.isAddModalOpen} toggleModal={this.toggleAddModal} addNewPrice={(newPrice) => this.addNewPrice(newPrice)}/>
             ) : null}
@@ -273,7 +326,7 @@ class AdminCjenik extends React.Component {
                     <tbody>
                     {this.state.isFetching ? (<><tr><td><ReactLoading type="bubbles" color="#8E8E93" height={'10%'} width={'10%'} /></td></tr></>) : null}
                     {this.state.currentPrices && this.state.currentPrices.map(price => (
-                    <AdminPriceTableRow key={price.sifcjenik} price={price}/>))}
+                    <AdminPriceTableRow key={price.sifcjenik} price={price} openChangePrice={(priceData) => this.openChangePrice(priceData)}/>))}
                     </tbody>
                     </Table>
                 </Card>

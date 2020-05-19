@@ -47,15 +47,15 @@ export class AdminVehicleTableRow extends Component {
                     <DropdownMenu className="dropdown-menu-arrow" right>
                       <DropdownItem
                         href=""
-                        onClick={this.openDetails}
-                      >
-                        Detalji
-                      </DropdownItem>
-                      <DropdownItem
-                        href=""
                         onClick={this.deactivateVehicle}
                       >
                         Deaktiviraj
+                      </DropdownItem>
+                      <DropdownItem
+                        href=""
+                        onClick={this.openDetails}
+                      >
+                        Detalji
                       </DropdownItem>
                     </DropdownMenu>
                   </UncontrolledDropdown>

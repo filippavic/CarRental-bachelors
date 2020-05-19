@@ -12,7 +12,6 @@ import {
     Modal,
     Row,
     Col,
-    Collapse,
     Button,
     Input,
     Alert
@@ -28,7 +27,6 @@ class VehicleDetailsModal extends React.Component{
 		this.state = {
             information: [],
             isFetching: false,
-            openedCollapses: [],
             prikupljeno: false,
             status : '',
             registracija: '',
@@ -53,19 +51,6 @@ class VehicleDetailsModal extends React.Component{
             this.setState({ information: data, registracija: data.registratskaoznaka, isFetching: false });
         });
     }
-
-    collapsesToggle = collapse => {
-        let openedCollapses = this.state.openedCollapses;
-        if (openedCollapses.includes(collapse)) {
-          this.setState({
-            openedCollapses: []
-          });
-        } else {
-          this.setState({
-            openedCollapses: [collapse]
-          });
-        }
-      };
 
     onChange = e => {
         this.setState({ [e.target.name]: e.target.value});
@@ -151,10 +136,10 @@ class VehicleDetailsModal extends React.Component{
                   <CardBody>
                     { this.state.msg ? (<Alert color="danger">{this.state.msg}</Alert>) : null }
                     <Form role="form">
-                    <h6 className="heading-small text-muted mb-4">
-                        Osnovno
-                    </h6>
                     <div className="pl-lg-4">
+                        <h6 className="heading-small text-muted mb-4">
+                            Osnovno
+                        </h6>
                         <Row>
                             <Col lg="3">
                                 <img className="car-img" draggable="false" alt={this.state.information.nazivmodel} src={this.state.information.urlslika}/>
@@ -193,117 +178,90 @@ class VehicleDetailsModal extends React.Component{
                                 )}
                             </Col>
                         </Row>
-                        </div>
 
-                        <Card className="card-plain" style={{marginTop: '10px'}}>
-                            <CardHeader
-                            role="tab"
-                            style={{cursor: 'pointer'}}
-                            onClick={() => this.collapsesToggle("collapseOne")}
-                            aria-expanded={this.state.openedCollapses.includes(
-                                "collapseOne"
-                            )}
-                            >
-                            <h5 className="mb-0">Detalji modela...</h5>
-                            </CardHeader>
-                            <Collapse
-                            role="tabpanel"
-                            isOpen={this.state.openedCollapses.includes("collapseOne")}
-                            >
-                            <CardBody>
-                                <Row>
-                                <Col lg="3">
-                                    <label
-                                    className="form-control-label"
-                                    >
-                                    Vrsta
-                                    </label>
-                                    {this.state.isFetching ? (
-                                        <ReactLoading type="bubbles" color="#8E8E93" height={'10%'} width={'10%'} />
-                                    ) : 
-                                    (<h3>{this.state.information.nazivvrstamodel}</h3>)}      
-                                </Col>
-                                <Col lg="3">
-                                    <label
-                                    className="form-control-label"
-                                    >
-                                    Motor
-                                    </label>
-                                    {this.state.isFetching ? (
-                                        <ReactLoading type="bubbles" color="#8E8E93" height={'10%'} width={'10%'} />
-                                    ) : 
-                                    (<h3>{this.state.information.nazivvrstamotor}</h3>)}
-                                </Col>
-                                <Col lg="3">
-                                    <label
-                                    className="form-control-label"
-                                    >
-                                    Mjenjač
-                                    </label>
-                                    {this.state.isFetching ? (
-                                        <ReactLoading type="bubbles" color="#8E8E93" height={'10%'} width={'10%'} />
-                                    ) : 
-                                    (<h3>{this.state.information.nazivvrstamjenjac}</h3>)}
-                                </Col>
-                                <Col lg="3">
-                                    <label
-                                    className="form-control-label"
-                                    >
-                                    Potrošnja
-                                    </label>
-                                    {this.state.isFetching ? (
-                                        <ReactLoading type="bubbles" color="#8E8E93" height={'10%'} width={'10%'} />
-                                    ) : 
-                                    (<h3>{this.state.information.potrosnja} l/100 km</h3>)}
-                                </Col>
-                                </Row>
-                            </CardBody>
-                            </Collapse>
-                        </Card>
+                        <hr className="my-4" />
+                        <h6 className="heading-small text-muted mb-4">
+                        Detalji o modelu
+                        </h6>
 
-                        <Card className="card-plain" style={{marginTop: '10px'}}>
-                            <CardHeader
-                            role="tab"
-                            style={{cursor: 'pointer'}}
-                            onClick={() => this.collapsesToggle("collapseTwo")}
-                            aria-expanded={this.state.openedCollapses.includes(
-                                "collapseTwo"
-                            )}
-                            >
-                            <h5 className="mb-0">Status vozila...</h5>
-                            </CardHeader>
-                            <Collapse
-                            role="tabpanel"
-                            isOpen={this.state.openedCollapses.includes("collapseTwo")}
-                            >
-                            <CardBody>
-                                <Row>
-                                <Col lg="5">
-                                    <label
-                                    className="form-control-label"
-                                    >
-                                    {this.state.prikupljeno ? ("Zadnja lokacija") : ("Lokacija")}
-                                    </label>
-                                    {this.state.isFetching ? (
-                                        <ReactLoading type="bubbles" color="#8E8E93" height={'10%'} width={'10%'} />
-                                    ) : 
-                                    (<h3>{this.state.information.ulica} {this.state.information.kucnibroj}, {this.state.information.nazivmjesto}</h3>)}      
-                                </Col>
-                                <Col lg="3">
-                                    <label
-                                    className="form-control-label"
-                                    >
-                                    Status
-                                    </label>
-                                    {this.state.isFetching ? (
-                                        <ReactLoading type="bubbles" color="#8E8E93" height={'10%'} width={'10%'} />
-                                    ) : 
-                                    (<h3>{this.state.status}</h3>)}
-                                </Col>
-                                </Row>
-                            </CardBody>
-                            </Collapse>
-                        </Card>
+                        <Row>
+                            <Col lg="3">
+                                <label
+                                className="form-control-label"
+                                >
+                                Vrsta
+                                </label>
+                                {this.state.isFetching ? (
+                                    <ReactLoading type="bubbles" color="#8E8E93" height={'10%'} width={'10%'} />
+                                ) : 
+                                (<h3>{this.state.information.nazivvrstamodel}</h3>)}      
+                            </Col>
+                            <Col lg="3">
+                                <label
+                                className="form-control-label"
+                                >
+                                Motor
+                                </label>
+                                {this.state.isFetching ? (
+                                    <ReactLoading type="bubbles" color="#8E8E93" height={'10%'} width={'10%'} />
+                                ) : 
+                                (<h3>{this.state.information.nazivvrstamotor}</h3>)}
+                            </Col>
+                            <Col lg="3">
+                                <label
+                                className="form-control-label"
+                                >
+                                Mjenjač
+                                </label>
+                                {this.state.isFetching ? (
+                                    <ReactLoading type="bubbles" color="#8E8E93" height={'10%'} width={'10%'} />
+                                ) : 
+                                (<h3>{this.state.information.nazivvrstamjenjac}</h3>)}
+                            </Col>
+                            <Col lg="3">
+                                <label
+                                className="form-control-label"
+                                >
+                                Potrošnja
+                                </label>
+                                {this.state.isFetching ? (
+                                    <ReactLoading type="bubbles" color="#8E8E93" height={'10%'} width={'10%'} />
+                                ) : 
+                                (<h3>{this.state.information.potrosnja} l/100 km</h3>)}
+                            </Col>
+                        </Row>
+
+                        <hr className="my-4" />
+                        <h6 className="heading-small text-muted mb-4">
+                        Status vozila
+                        </h6>
+
+                        <Row>
+                            <Col lg="5">
+                                <label
+                                className="form-control-label"
+                                >
+                                {this.state.prikupljeno ? ("Zadnja lokacija") : ("Lokacija")}
+                                </label>
+                                {this.state.isFetching ? (
+                                    <ReactLoading type="bubbles" color="#8E8E93" height={'10%'} width={'10%'} />
+                                ) : 
+                                (<h3>{this.state.information.ulica} {this.state.information.kucnibroj}, {this.state.information.nazivmjesto}</h3>)}      
+                            </Col>
+                            <Col lg="3">
+                                <label
+                                className="form-control-label"
+                                >
+                                Status
+                                </label>
+                                {this.state.isFetching ? (
+                                    <ReactLoading type="bubbles" color="#8E8E93" height={'10%'} width={'10%'} />
+                                ) : 
+                                (<h3>{this.state.status}</h3>)}
+                            </Col>
+                        </Row>
+
+                    </div>
                       <div className="text-center">
                       </div>
                     </Form>

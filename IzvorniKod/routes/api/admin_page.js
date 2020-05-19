@@ -129,7 +129,7 @@ router.post("/finish", auth, (req, res) => {
 router.get("/locations", auth, (req, res) => {
     res.setHeader("content-type", "application/json");
     res.setHeader("accept", "application/json");
-    db.any('SELECT siflokacija, ulica, kucnibroj, pbrmjesto, nazivmjesto, nazivdrzava FROM lokacija NATURAL JOIN mjesto NATURAL JOIN drzava WHERE aktivna=TRUE').then(data => {
+    db.any('SELECT siflokacija, ulica, kucnibroj, pbrmjesto, nazivmjesto, drzava.koddrzava, nazivdrzava FROM lokacija NATURAL JOIN mjesto NATURAL JOIN drzava WHERE aktivna=TRUE').then(data => {
         res.send(data);
     })
     .catch(error => {
@@ -141,7 +141,7 @@ router.get("/locations", auth, (req, res) => {
 router.get("/notactivelocations", auth, (req, res) => {
     res.setHeader("content-type", "application/json");
     res.setHeader("accept", "application/json");
-    db.any('SELECT siflokacija, ulica, kucnibroj, pbrmjesto, nazivmjesto, nazivdrzava FROM lokacija NATURAL JOIN mjesto NATURAL JOIN drzava WHERE aktivna=FALSE').then(data => {
+    db.any('SELECT siflokacija, ulica, kucnibroj, pbrmjesto, nazivmjesto, drzava.koddrzava, nazivdrzava FROM lokacija NATURAL JOIN mjesto NATURAL JOIN drzava WHERE aktivna=FALSE').then(data => {
         res.send(data);
     })
     .catch(error => {
@@ -261,6 +261,51 @@ router.post("/newlocation", auth, (req, res) => {
         });
 });
 
+//promjena podataka podruznice
+router.post("/changelocation", auth, (req, res) => {
+    const locationData = {
+        siflokacija: req.body.siflokacija,
+        adresa: req.body.adresa,
+        kucnibroj: req.body.kucnibroj,
+        postbroj: req.body.postbroj,
+        nazivmjesto: req.body.nazivmjesto,
+        koddrzava: req.body.koddrzava
+    };
+    
+    //provjera podataka
+    if(!locationData.siflokacija || !locationData.adresa || !locationData.kucnibroj || !locationData.postbroj || !locationData.nazivmjesto || !locationData.koddrzava){
+        return res.status(400).json({msg: "Došlo je do pogreške, pokušajte ponovno."});
+    }
+
+    db.task(t => {
+        return t.any('SELECT nazivmjesto FROM mjesto WHERE pbrmjesto=${postbroj}', {
+            postbroj: locationData.postbroj
+        }).then(data => {
+                if(data.length === 0) {
+                    return t.none('INSERT INTO mjesto (pbrmjesto, nazivmjesto, koddrzava) VALUES (${postbroj}, ${nazivmjesto}, ${koddrzava})', {
+                        postbroj: locationData.postbroj,
+                        nazivmjesto: locationData.nazivmjesto,
+                        koddrzava: locationData.koddrzava
+                    });
+                }
+                return [];
+        }).then(data => {
+            return t.none('UPDATE lokacija SET ulica=${adresa}, kucnibroj=${kucnibroj}, pbrmjesto=${postbroj} WHERE siflokacija=${siflokacija}', {
+                adresa: locationData.adresa,
+                kucnibroj: locationData.kucnibroj,
+                postbroj: locationData.postbroj,
+                siflokacija: locationData.siflokacija
+            });
+        });
+        })
+        .then(events => {
+            return res.status(200).json({msg: "Uspješno"});
+        })
+        .catch(error => {
+            res.status(400).json({ msg: 'Dogodila se pogreška'});
+        });
+});
+
 
 //dohvacanje detalja o najmu
 router.get('/rentinfo/:sifnajam', auth, (req, res) => {
@@ -302,7 +347,7 @@ router.get('/vehicleinfo/:sifvozilo', auth, (req, res) => {
     res.setHeader("content-type", "application/json");
     res.setHeader("accept", "application/json");
  
-    db.one('SELECT vozilo.sifvozilo, registratskaoznaka, nazivproizvodac, nazivmodel, nazivvrstamodel, nazivvrstamotor, nazivvrstamjenjac, potrosnja, urlslika, to_char(lokacija_vozilo.datumvrijeme, \'DD.MM.YYYY. HH24:MI\') AS datumvrijeme, ulica, kucnibroj, nazivmjesto, lokacija_vozilo.sifstatus FROM najam RIGHT JOIN vozilo ON vozilo.sifvozilo = najam.sifvozilo JOIN lokacija_vozilo ON vozilo.sifvozilo = lokacija_vozilo.sifvozilo NATURAL JOIN model NATURAL JOIN proizvodac NATURAL JOIN vrsta_model NATURAL JOIN vrsta_mjenjac NATURAL JOIN vrsta_motor NATURAL JOIN cjenik NATURAL JOIN lokacija NATURAL JOIN mjesto NATURAL JOIN status WHERE vozilo.sifvozilo=$1 ORDER BY lokacija_vozilo.datumvrijeme DESC LIMIT 1',
+    db.one('SELECT vozilo.sifvozilo, registratskaoznaka, nazivproizvodac, nazivmodel, nazivvrstamodel, nazivvrstamotor, nazivvrstamjenjac, potrosnja, urlslika, to_char(lokacija_vozilo.datumvrijeme, \'DD.MM.YYYY. HH24:MI\') AS datumvrijeme, ulica, kucnibroj, nazivmjesto, lokacija_vozilo.sifstatus FROM vozilo JOIN lokacija_vozilo ON vozilo.sifvozilo = lokacija_vozilo.sifvozilo NATURAL JOIN model NATURAL JOIN proizvodac NATURAL JOIN vrsta_model NATURAL JOIN vrsta_mjenjac NATURAL JOIN vrsta_motor NATURAL JOIN lokacija NATURAL JOIN mjesto NATURAL JOIN status WHERE vozilo.sifvozilo=$1 ORDER BY lokacija_vozilo.datumvrijeme DESC LIMIT 1',
     [req.params.sifvozilo]).then(data => {
         res.send(data);
     });  
@@ -480,6 +525,30 @@ router.post("/addmodelprice", auth, (req, res) => {
         sifmodel: priceData.sifmodel,
         cijenapodanu: priceData.cijenapodanu,
         period: priceData.period
+    })
+    .then(data => {
+        return res.status(200).json({msg: "Uspješno"});
+    })
+    .catch(error => {
+        return res.status(400).json({msg: 'Dogodila se pogreška'});
+    });
+});
+
+//promjena cijene modela
+router.post("/changemodelprice", auth, (req, res) => {
+    const priceData = {
+        sifcjenik: req.body.sifcjenik,
+        cijenapodanu: req.body.cijenapodanu
+    };
+    
+    //provjera podataka
+    if(!priceData.sifcjenik || !priceData.cijenapodanu){
+        return res.status(400).json({msg: "Došlo je do pogreške, pokušajte ponovno."});
+    }
+
+    db.none('UPDATE cjenik SET cijenapodanu=${cijenapodanu} WHERE sifcjenik=${sifcjenik}', {
+        sifcjenik: priceData.sifcjenik,
+        cijenapodanu: priceData.cijenapodanu
     })
     .then(data => {
         return res.status(200).json({msg: "Uspješno"});
