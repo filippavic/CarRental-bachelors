@@ -279,10 +279,18 @@ router.post("/changelocation", auth, (req, res) => {
 
     db.task(t => {
         return t.any('SELECT nazivmjesto FROM mjesto WHERE pbrmjesto=${postbroj}', {
-            postbroj: locationData.postbroj
+            postbroj: locationData.postbroj,
+            koddrzava: locationData.koddrzava
         }).then(data => {
                 if(data.length === 0) {
                     return t.none('INSERT INTO mjesto (pbrmjesto, nazivmjesto, koddrzava) VALUES (${postbroj}, ${nazivmjesto}, ${koddrzava})', {
+                        postbroj: locationData.postbroj,
+                        nazivmjesto: locationData.nazivmjesto,
+                        koddrzava: locationData.koddrzava
+                    });
+                }
+                if(data.length !== 0) {
+                    return t.none('UPDATE mjesto SET nazivmjesto=${nazivmjesto}, koddrzava=${koddrzava} WHERE pbrmjesto=${postbroj}', {
                         postbroj: locationData.postbroj,
                         nazivmjesto: locationData.nazivmjesto,
                         koddrzava: locationData.koddrzava
@@ -347,7 +355,7 @@ router.get('/vehicleinfo/:sifvozilo', auth, (req, res) => {
     res.setHeader("content-type", "application/json");
     res.setHeader("accept", "application/json");
  
-    db.one('SELECT vozilo.sifvozilo, registratskaoznaka, nazivproizvodac, nazivmodel, nazivvrstamodel, nazivvrstamotor, nazivvrstamjenjac, potrosnja, urlslika, to_char(lokacija_vozilo.datumvrijeme, \'DD.MM.YYYY. HH24:MI\') AS datumvrijeme, ulica, kucnibroj, nazivmjesto, lokacija_vozilo.sifstatus FROM vozilo JOIN lokacija_vozilo ON vozilo.sifvozilo = lokacija_vozilo.sifvozilo NATURAL JOIN model NATURAL JOIN proizvodac NATURAL JOIN vrsta_model NATURAL JOIN vrsta_mjenjac NATURAL JOIN vrsta_motor NATURAL JOIN lokacija NATURAL JOIN mjesto NATURAL JOIN status WHERE vozilo.sifvozilo=$1 ORDER BY lokacija_vozilo.datumvrijeme DESC LIMIT 1',
+    db.one('SELECT vozilo.sifvozilo, registratskaoznaka, sifproizvodac, nazivproizvodac, sifmodel, nazivmodel, nazivvrstamodel, sifvrstamotor, nazivvrstamotor, sifvrstamjenjac, nazivvrstamjenjac, potrosnja, urlslika, to_char(lokacija_vozilo.datumvrijeme, \'DD.MM.YYYY. HH24:MI\') AS datumvrijeme, ulica, kucnibroj, nazivmjesto, lokacija_vozilo.sifstatus FROM vozilo JOIN lokacija_vozilo ON vozilo.sifvozilo = lokacija_vozilo.sifvozilo NATURAL JOIN model NATURAL JOIN proizvodac NATURAL JOIN vrsta_model NATURAL JOIN vrsta_mjenjac NATURAL JOIN vrsta_motor NATURAL JOIN lokacija NATURAL JOIN mjesto NATURAL JOIN status WHERE vozilo.sifvozilo=$1 ORDER BY lokacija_vozilo.datumvrijeme DESC LIMIT 1',
     [req.params.sifvozilo]).then(data => {
         res.send(data);
     });  
@@ -374,6 +382,36 @@ router.post("/changeregistration", auth, (req, res) => {
     })
     .catch(error => {
         return res.status(400).json({msg: 'Registracija već postoji'});
+    });
+});
+
+//azuriranje podataka o vozilu
+router.post("/updatevehicle", auth, (req, res) => {
+    const newVehicleData = {
+        sifvozilo: req.body.sifvozilo,
+        sifmodel: req.body.sifmodel,
+        sifmjenjac: req.body.sifmjenjac,
+        sifmotor: req.body.sifmotor,
+        potrosnja: req.body.potrosnja
+    };
+
+    //provjera podataka
+    if(!newVehicleData.sifvozilo || !newVehicleData.sifmodel || !newVehicleData.sifmjenjac || !newVehicleData.sifmotor || !newVehicleData.potrosnja){
+        return res.status(400).json({msg: "Došlo je do pogreške, pokušajte ponovno"});
+    }
+
+    db.none('UPDATE vozilo SET sifmodel=${sifmodel}, sifvrstamjenjac=${sifmjenjac}, sifvrstamotor=${sifmotor}, potrosnja=${potrosnja} WHERE sifvozilo=${sifvozilo}', {
+        sifvozilo: newVehicleData.sifvozilo,
+        sifmodel: newVehicleData.sifmodel,
+        sifmjenjac: newVehicleData.sifmjenjac,
+        sifmotor: newVehicleData.sifmotor,
+        potrosnja: newVehicleData.potrosnja
+    })
+    .then(data => {
+        return res.status(200).json({msg: "Uspješno"});
+    })
+    .catch(error => {
+        return res.status(400).json({msg: 'Došlo je do pogreške'});
     });
 });
 

@@ -1,6 +1,7 @@
 //Modal za promjenu podataka podruznice
 
 import React from 'react'
+import axios from 'axios';
 import Select from 'react-select';
 
 // reactstrap components
@@ -17,6 +18,40 @@ import {
     Col
   } from "reactstrap";
 
+//stil selection drop-down menija
+const reactSelectStyles = {
+  control: (base, state) => ({
+      ...base,
+      background: "#ffffff",
+      borderRadius: "0.375rem",
+      border: "0",
+      boxShadow: "0 1px 3px rgba(50, 50, 93, 0.15), 0 1px 0 rgba(0, 0, 0, 0.02)",
+      height: "calc(2.75rem + 2px)",
+      marginBottom: "1.5rem",
+      cursor: "pointer",
+      fontSize: "0.875rem",
+      "&:hover": {
+          boxShadow: "0 1.5px 3.5px rgba(50, 50, 93, 0.2), 0 1.5px 0 rgba(0, 0, 0, 0.05)"
+      }
+    }),
+  placeholder: (defaultStyles) => {
+      return {
+          ...defaultStyles,
+          color: '#ADB5BD',
+      }
+  },
+  option: (styles, { isFocused, isSelected }) => {
+      return {
+          ...styles,
+          backgroundColor: isSelected ? 'rgba(192, 72, 72, 0.4)' : isFocused ? 'rgba(192, 72, 72, 0.4)' : null,
+          color: 'black',          
+          ':active': {
+              ...styles[':active'],
+              backgroundColor:  'rgba(192, 72, 72, 0.6)',
+          },
+      };
+  }
+}
 
 class ChangeLocationModal extends React.Component{
 
@@ -29,22 +64,33 @@ class ChangeLocationModal extends React.Component{
             nazivmjesto: null,
             koddrzava: null
         };
+        this.options = [];
     }
 
     componentDidMount(){
+        let drzava = {label: this.props.locationData.nazivdrzava, value: this.props.locationData.koddrzava};
         this.setState({
             siflokacija: this.props.locationData.siflokacija,
             adresa: this.props.locationData.ulica,
             kucnibroj: this.props.locationData.kucnibroj,
             postbroj: this.props.locationData.pbrmjesto,
             nazivmjesto: this.props.locationData.nazivmjesto,
-            koddrzava: this.props.locationData.koddrzava
+            koddrzava: drzava
+        });
+        axios.get(`/api/admin_page/countries/`).then(res => {
+          const data = res.data;
+          this.setState({ options: data });
         });
     }
 
     onChange = e => {
         this.setState({ [e.target.name]: e.target.value});
     }
+
+    //funkcija za odabir drzave
+    handleCountrySelect = koddrzava => {
+      this.setState({ koddrzava });
+    };
 
     onSubmit = e => {
         e.preventDefault();
@@ -64,7 +110,7 @@ class ChangeLocationModal extends React.Component{
           kucnibroj,
           postbroj,
           nazivmjesto,
-          koddrzava
+          koddrzava: koddrzava.value
         };
     
         this.props.changeLocation(changedLocation);
@@ -182,6 +228,24 @@ class ChangeLocationModal extends React.Component{
                                 onChange={this.onChange}
                                 />
                             </FormGroup>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col lg="6">
+                                <FormGroup>
+                                    <label
+                                    className="form-control-label"
+                                    >
+                                    Država
+                                    </label>
+                                    <Select
+                                    styles={reactSelectStyles}
+                                    placeholder="Država"
+                                    options={this.state.options}
+                                    defaultValue={this.state.koddrzava}
+                                    onChange={this.handleCountrySelect}
+                                    />
+                                </FormGroup>
                             </Col>
                         </Row>
                         </div>

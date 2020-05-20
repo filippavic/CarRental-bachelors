@@ -29,7 +29,8 @@ export class AdminLocationTableRow extends Component {
       kucnibroj: this.props.location.kucnibroj,
       pbrmjesto: this.props.location.pbrmjesto,
       nazivmjesto: this.props.location.nazivmjesto,
-      koddrzava: this.props.location.koddrzava
+      koddrzava: this.props.location.koddrzava,
+      nazivdrzava: this.props.location.nazivdrzava
     };
     this.props.openChangeModal(locationData);
   }
